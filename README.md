@@ -1,1 +1,1 @@
-dig dig cau
+Mister Kennedy game
