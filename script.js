@@ -1,37 +1,54 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-const controlsBtn = document.getElementById("controls");
-const closeBtn = document.getElementById("closeControls");
-const overlay = document.getElementById("controlsOverlay");
+const controlsBtn = document.getElementById('controls');
+const closeBtn = document.getElementById('closeControls');
+const overlay = document.getElementById('controlsOverlay');
 
 ctx.imageSmoothingEnabled = false;
 
-controlsBtn.addEventListener("click", () => {
-  overlay.style.display = "flex";
+// MENU / OVERLAY
+controlsBtn.addEventListener('click', () => {
+    overlay.style.display = 'flex';
 });
 
-closeBtn.addEventListener("click", () => {
-  overlay.style.display = "none";
+closeBtn.addEventListener('click', () => {
+    overlay.style.display = 'none';
 });
 
-window.addEventListener("click", (event) => {
-  if (event.target == overlay) {
-    overlay.style.display = "none";
-  }
+window.addEventListener('click', (event) => {
+    if (event.target == overlay) {
+        overlay.style.display = 'none';
+    }
 });
 
+// PLAYER IMAGE
 const playerImg = new Image();
 playerImg.src = "assets/Leon Kennedy.png";
 
+// PLAYER
 const player = {
   x: 100,
   y: 100,
   width: 128,
-  height: 128
+  height: 128w,
+  speed: 3
 };
 
+// KLÁVESY
+const keys = {};
+
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
+
+// GAME STATE
 let gameRunning = false;
 
+// START GAME
 function startGame() {
   document.getElementById("menu").style.display = "none";
   canvas.style.display = "block";
@@ -47,14 +64,42 @@ function startGame() {
   }
 }
 
+// UPDATE (POHYB)
+function update() {
+  if (keys["w"] || keys["ArrowUp"]) {
+    player.y -= player.speed;
+  }
+
+  if (keys["s"] || keys["ArrowDown"]) {
+    player.y += player.speed;
+  }
+
+  if (keys["a"] || keys["ArrowLeft"]) {
+    player.x -= player.speed;
+  }
+
+  if (keys["d"] || keys["ArrowRight"]) {
+    player.x += player.speed;
+  }
+
+  // hranice (aby nešiel mimo)
+  player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+}
+
+// GAME LOOP
 function gameLoop() {
   if (!gameRunning) return;
 
+  update();
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // pozadie
   ctx.fillStyle = "green";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // hráč
   ctx.drawImage(
     playerImg,
     player.x,
@@ -66,10 +111,11 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
+// OVERLAY FUNKCIE
 function on() {
-  document.getElementById("overlay").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
 }
 
 function off() {
-  document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
 }
