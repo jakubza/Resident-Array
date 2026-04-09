@@ -1,4 +1,119 @@
-.body {
-    background-color: greenyellow;
+body {
+    background-color: rgb(34, 34, 34);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    height: 95vh;
+    display: flex;
+}
+#overlay {
+    position: fixed; 
+    display: none; 
+    width: 1000px; 
+    height: 100%; 
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5); 
+    z-index: 2; 
+    cursor: pointer; 
+  }
+#text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+}
+#game {
+    display: none;
+    border: 2px solid white;
+    background: black;
+
+}
+
+#menu {
     text-align: center;
+    font-size: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#start {
+    background-color: rgb(34, 34, 34);
+    border: none;
+    color: rgb(255, 255, 255);
+    padding: 15px 63px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid white;
+
+}
+
+#controls {
+    background-color: rgb(34, 34, 34);
+    border: none;
+    color: rgb(255, 255, 255);
+    padding: 15px 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid white;
+
+}
+.overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); 
+    z-index: 10; 
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-content {
+    background-color: #1a1a1a;
+    padding: 40px;
+    border: 2px solid #ffffff; 
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+}
+
+.overlay-content h2 {
+    margin-top: 0;
+    color: #ffffff;
+}
+
+.overlay-content ul {
+    list-style: none;
+    padding: 0;
+    line-height: 2;
+}
+
+#closeControls {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+#closeControls:hover {
+    background-color: white;
+    color: black;
 }
