@@ -30,7 +30,7 @@ const player = {
   x: 100,
   y: 100,
   width: 128,
-  height: 128w,
+  height: 128,
   speed: 3
 };
 
