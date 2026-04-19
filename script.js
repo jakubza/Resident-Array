@@ -1,101 +1,167 @@
-/*
-import './styles.css'
-import { KeyInput } from "./src/keyinput";
-*/
-
-
-
-
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-const controlsBtn = document.getElementById('controls');
-const closeBtn = document.getElementById('closeControls');
-const overlay = document.getElementById('controlsOverlay');
+
+const menu = document.getElementById("menu");
+const startBtn = document.getElementById("startBtn");
+const controlsBtn = document.getElementById("controls");
+const closeBtn = document.getElementById("closeControls");
+const overlay = document.getElementById("controlsOverlay");
 
 ctx.imageSmoothingEnabled = false;
 
-const tileW = 40;
-const tileH = 40;
-
-const gridRows = 10;
-const gridCols = 10;
-
-
-
-
-/*
-// pozadie
-const map = [
-  0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 1, 0, 0, 0, 0,
-  0, 0, 0, 1, 0, 1, 0, 0, 0, 0,
-  0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-
-]
-
-const updateAll = () => {
-
-  window.requestAnimationFrame(updateAll);
+// =====================================
+// FULLSCREEN CANVAS
+// =====================================
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-window.onload = () => {
+// =====================================
+// SETTINGS
+// =====================================
+const TILE_SIZE = 16;
+const ZOOM = 4;
 
-  window.requestAnimationFrame(updateAll);
-}
+const gridCols = 96;
+const gridRows = 64;
 
-const drawMap = () => {
-  for (let eachRow = 0; eachRow < gridRows; eachRow++) {
-    for (let eachCol = 0; eachCol < gridCols; eachCol++) {
+// =====================================
+// MAPA
+// =====================================
+const mapRows = [
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 
-      let arrayIndex = eachRow * gridRows + eachCol;
+  "000000666666666666000000000000000000000000000000000000000000000000666666666666000000000000000000",
+  "000000611111111116000000000000000000000000000000000000000000000000611111111116000000000000000000",
+  "000000611111111116000000000000000000000000000000000000000000000000611111111116000000000000000000",
+  "000000611111111116000000000000000000000000000000000000000000000000611111111116000000000000000000",
+  "000000611111111116000000000000000000000000000000000000000000000000611111111116000000000000000000",
+  "000000611111111116000000000000000000000000000000000000000000000000611111111116000000000000000000",
+  "000000666666266666222222222266666666666666666666666666222222222266666626666666000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111116000000000000000020000000000000000000000000",
 
-      if (map[arrayIndex] === 1) {
-        ctx.fillStyle = "blue";
-        ctx.fillRect(tileW * eachCol, tileH * eachRow, tileW, tileH);
-      } else {
-        ctx.fillStyle = "black";
-        ctx.fillRect(tileW * eachCol, tileH * eachRow, tileW, tileH);
-      }
+  "000000000000020000000000000006666666666666666666666666666666666666666600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111411111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006111111111111111111111111111111111111111600000000000000000000000000",
+  "000000000000020000000000000006666666666666666666666666226666666666666600000000000000000000000000",
 
-    }
-  }
-}; */
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000020000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000666666626666660000000000000000000000000000000000020000000000666666666666660000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111311160000000000000000",
+  "000000611111111111160000000000000000000000000000000000020000000000611111111111160000000000000000",
+  "000000666666666666660000000000000000000000000000000000020000000000666666666666660000000000000000",
 
-// MENU / OVERLAY
-controlsBtn.addEventListener('click', () => {
-  overlay.style.display = 'flex';
-});
+  "000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000",
 
-closeBtn.addEventListener('click', () => {
-  overlay.style.display = 'none';
-});
+  "000000000000000000000000000000000000000000000000000000666666666600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000611111111600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000611111111600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000611111111600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000611111111600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000666666666600000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+];
 
-window.addEventListener('click', (event) => {
-  if (event.target == overlay) {
-    overlay.style.display = 'none';
-  }
-});
+const map = mapRows.join("").split("").map(Number);
 
-// PLAYER IMAGE
+console.log("map length =", map.length, "expected =", gridCols * gridRows);
+
+// =====================================
+// TEXTURES
+// =====================================
+const tileset = new Image();
+tileset.src = "assets/tileset.png";
+
 const playerImg = new Image();
 playerImg.src = "assets/player.png";
 
-// PLAYER
-const player = {
-  x: 100,
-  y: 100,
-  width: 64,
-  height: 64,
-  speed: 3
+const atlas = {
+  floor:    { x: 32,  y: 48,  w: 16, h: 16 },
+  corridor: { x: 32,  y: 48,  w: 16, h: 16 },
+  loot:     { x: 224, y: 176, w: 16, h: 16 },
+  entrance: { x: 80,  y: 32,  w: 32, h: 16 },
+  blocked:  { x: 368, y: 16,  w: 32, h: 32 },
+  wall:     { x: 16,  y: 16,  w: 16, h: 16 }
 };
 
-// KLÁVESY
+// =====================================
+// PLAYER
+// =====================================
+const player = {
+  x: 0,
+  y: 0,
+  width: 16,
+  height: 16,
+  speed: 2
+};
+
+function spawnPlayer() {
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      const tile = map[row * gridCols + col];
+      if (tile === 4) {
+        player.x = col * TILE_SIZE;
+        player.y = row * TILE_SIZE;
+        return;
+      }
+    }
+  }
+
+  player.x = 24 * TILE_SIZE;
+  player.y = 28 * TILE_SIZE;
+}
+
+spawnPlayer();
+
+// =====================================
+// INPUT
+// =====================================
 const keys = {};
 
 window.addEventListener("keydown", (e) => {
@@ -106,78 +172,199 @@ window.addEventListener("keyup", (e) => {
   keys[e.key] = false;
 });
 
-// GAME STATE
+// =====================================
+// CAMERA
+// =====================================
+const camera = {
+  x: 0,
+  y: 0
+};
+
+function updateCamera() {
+  const visibleWorldWidth = canvas.width / ZOOM;
+  const visibleWorldHeight = canvas.height / ZOOM;
+
+  camera.x = player.x + player.width / 2 - visibleWorldWidth / 2;
+  camera.y = player.y + player.height / 2 - visibleWorldHeight / 2;
+
+  const maxCameraX = gridCols * TILE_SIZE - visibleWorldWidth;
+  const maxCameraY = gridRows * TILE_SIZE - visibleWorldHeight;
+
+  camera.x = Math.max(0, Math.min(camera.x, maxCameraX));
+  camera.y = Math.max(0, Math.min(camera.y, maxCameraY));
+}
+
+// =====================================
+// COLLISION
+// =====================================
+function getTile(x, y) {
+  if (x < 0 || x >= gridCols || y < 0 || y >= gridRows) return 0;
+  return map[y * gridCols + x];
+}
+
+function isSolidTile(tile) {
+  return tile === 0 || tile === 5 || tile === 6;
+}
+
+function isWalkable(x, y, width, height) {
+  const hitbox = {
+    x: x + 2,
+    y: y + 2,
+    width: width - 4,
+    height: height - 4
+  };
+
+  const left = Math.floor(hitbox.x / TILE_SIZE);
+  const right = Math.floor((hitbox.x + hitbox.width - 1) / TILE_SIZE);
+  const top = Math.floor(hitbox.y / TILE_SIZE);
+  const bottom = Math.floor((hitbox.y + hitbox.height - 1) / TILE_SIZE);
+
+  if (left < 0 || right >= gridCols || top < 0 || bottom >= gridRows) {
+    return false;
+  }
+
+  const corners = [
+    getTile(left, top),
+    getTile(right, top),
+    getTile(left, bottom),
+    getTile(right, bottom)
+  ];
+
+  return !corners.some(isSolidTile);
+}
+
+// =====================================
+// DRAW HELPERS
+// =====================================
+function drawAtlasTile(atlasX, atlasY, atlasW, atlasH, screenX, screenY, screenW, screenH) {
+  ctx.drawImage(
+    tileset,
+    atlasX,
+    atlasY,
+    atlasW,
+    atlasH,
+    screenX,
+    screenY,
+    screenW,
+    screenH
+  );
+}
+
+function getAtlasForTile(tile) {
+  if (tile === 1) return atlas.floor;
+  if (tile === 2) return atlas.corridor;
+  if (tile === 3) return atlas.loot;
+  if (tile === 4) return atlas.entrance;
+  if (tile === 5) return atlas.blocked;
+  if (tile === 6) return atlas.wall;
+  return null;
+}
+
+// =====================================
+// DRAW MAP
+// =====================================
+function drawMap() {
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      const tile = map[row * gridCols + col];
+      if (tile === 0) continue;
+
+      const atlasTile = getAtlasForTile(tile);
+      if (!atlasTile) continue;
+
+      drawAtlasTile(
+        atlasTile.x,
+        atlasTile.y,
+        atlasTile.w,
+        atlasTile.h,
+        (col * TILE_SIZE - camera.x) * ZOOM,
+        (row * TILE_SIZE - camera.y) * ZOOM,
+        TILE_SIZE * ZOOM,
+        TILE_SIZE * ZOOM
+      );
+    }
+  }
+}
+
+// =====================================
+// UPDATE
+// =====================================
+function update() {
+  let nextX = player.x;
+  let nextY = player.y;
+
+  if (keys["w"] || keys["ArrowUp"]) nextY -= player.speed;
+  if (keys["s"] || keys["ArrowDown"]) nextY += player.speed;
+  if (keys["a"] || keys["ArrowLeft"]) nextX -= player.speed;
+  if (keys["d"] || keys["ArrowRight"]) nextX += player.speed;
+
+  if (isWalkable(nextX, player.y, player.width, player.height)) {
+    player.x = nextX;
+  }
+
+  if (isWalkable(player.x, nextY, player.width, player.height)) {
+    player.y = nextY;
+  }
+
+  updateCamera();
+}
+
+// =====================================
+// GAME LOOP
+// =====================================
 let gameRunning = false;
 
-// START GAME
-function startGame() {
-  document.getElementById("menu").style.display = "none";
-  canvas.style.display = "block";
-
-  gameRunning = true;
-
-  if (playerImg.complete) {
-    gameLoop();
-  } else {
-    playerImg.onload = () => {
-      gameLoop();
-    };
-  }
-}
-
-// UPDATE (POHYB)
-function update() {
-  if (keys["w"] || keys["ArrowUp"]) {
-    player.y -= player.speed;
-  }
-
-  if (keys["s"] || keys["ArrowDown"]) {
-    player.y += player.speed;
-  }
-
-  if (keys["a"] || keys["ArrowLeft"]) {
-    player.x -= player.speed;
-  }
-
-  if (keys["d"] || keys["ArrowRight"]) {
-    player.x += player.speed;
-  }
-
-  // hranice (aby nešiel mimo)
-  player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-  player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
-}
-
-// GAME LOOP
 function gameLoop() {
   if (!gameRunning) return;
 
   update();
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // pozadie
-  const map = [
-
-  ]
-
+  drawMap();
 
   ctx.drawImage(
     playerImg,
-    player.x,
-    player.y,
-    player.width,
-    player.height
+    (player.x - camera.x) * ZOOM,
+    (player.y - camera.y) * ZOOM,
+    player.width * ZOOM,
+    player.height * ZOOM
   );
 
   requestAnimationFrame(gameLoop);
 }
 
-// OVERLAY FUNKCIE
-function on() {
-  document.getElementById("overlay").style.display = "block";
-}
+// =====================================
+// START GAME
+// =====================================
+function startGame() {
+  if (menu) menu.style.display = "none";
+  canvas.style.display = "block";
 
-function off() {
-  document.getElementById("overlay").style.display = "none";
+  updateCamera();
+  gameRunning = true;
+
+  Promise.all([
+    new Promise((resolve, reject) => {
+      if (tileset.complete && tileset.naturalWidth > 0) resolve();
+      else {
+        tileset.onload = resolve;
+        tileset.onerror = () => reject(new Error("Nepodarilo sa načítať assets/tileset.png"));
+      }
+    }),
+    new Promise((resolve, reject) => {
+      if (playerImg.complete && playerImg.naturalWidth > 0) resolve();
+      else {
+        playerImg.onload = resolve;
+        playerImg.onerror = () => reject(new Error("Nepodarilo sa načítať assets/player.png"));
+      }
+    })
+  ])
+    .then(() => {
+      console.log("Assets loaded OK");
+      gameLoop();
+    })
+    .catch((err) => {
+      console.error(err);
+      alert(err.message);
+    });
 }
