@@ -8,6 +8,14 @@ body {
     display: flex;
 }
 
+canvas {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  image-rendering: pixelated;
+  background: black;
+}
+
 #game {
     display: none;
     border: 2px solid white;
