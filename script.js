@@ -103,6 +103,11 @@ const atlas = {
   wall_center:  { x: 16,  y: 16,  w: 16, h: 16 },
   wall_right: { x: 32,  y: 16,  w: 16, h: 16 },
   wall_top_center: { x: 16,  y: 0,   w: 16, h: 16 },
+  wall_front: { x: 272, y: 16,  w: 32, h: 32 },
+  wall_outer_n: { x: 272, y: 0,  w: 16, h: 16 },
+  wall_outer_ne: { x: 288, y: 0,  w: 16, h: 16 },
+  wall_outer_nw: { x: 256, y: 0,  w: 16, h: 16 },
+  wall_outer_e: { x: 288, y: 16, w: 16, h: 16 },
 };
 
 // =====================================
@@ -121,6 +126,11 @@ function getAtlasForTile(tile) {
   if (tile === 6) return atlas.wall_center;
   if (tile === 7) return atlas.wall_right;
   if (tile === 8) return atlas.wall_top_center;
+  if (tile === 9) return atlas.wall_front;
+  if (tile === 10) return atlas.wall_outer_n;
+  if (tile === 1) return atlas.wall_outer_ne;
+  if (tile === 12) return atlas.wall_outer_nw;
+  if (tile === 13) return atlas.wall_outer_e;
   return null;
 }
 
