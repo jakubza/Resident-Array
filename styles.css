@@ -9,18 +9,16 @@ body {
 }
 
 canvas {
-  display: none;
-  width: 100vw;
-  height: 100vh;
+  display: block;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
   background: black;
 }
 
 #game {
-    display: none;
-    border: 2px solid white;
-    background: black;
-
+  display: none;
+  background: black;
+  image-rendering: pixelated;
 }
 
 #menu {
