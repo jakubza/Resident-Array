@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
     <div id="menu">
         <h1>RESIDENT ARRAY</h1>
         <button id="start" onclick="startGame()">Start</button>
@@ -20,16 +21,28 @@
                     <li><strong>WSAD - Movement</strong> </li>
                     <li><strong>Space - Slash</strong> </li>
                     <li><strong>Enter - Confirm</strong> </li>
-                    
+
                 </ul>
                 <button id="closeControls">Back to Menu</button>
             </div>
         </div>
     </div>
-    <div id="deathScreen" style="display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 100; font-family: monospace;">
-        <h1 style="font-size: 64px; color: #ff3333; margin-bottom: 20px;">YOU DIED</h1>
-        <button id="restartBtn" style="padding: 15px 30px; font-size: 24px; cursor: pointer; background-color: #ffffff; border: none; font-weight: bold; font-family: monospace;">Restart Game</button>
-      </div>
+
+    <div id="deathScreen">
+
+        <h1 id="deathText">
+            YOU ARE DEAD
+        </h1>
+
+        <button id="restartBtn">
+            RETRY?
+        </button>
+    </div>
+    <div id="winScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); flex-direction: column; align-items: center; justify-content: center; z-index: 100; color: #f2cc0d; font-family: serif; transition: opacity 2s;">
+        <h1 id="winText" style="font-size: 5rem; opacity: 0; transform: scale(0.8); margin-bottom: 20px;">MISSION ACCOMPLISHED</h1>
+        <button id="winRestartBtn" style="padding: 15px 30px; font-size: 1.5rem; cursor: pointer; background: #f2cc0d; border: none; font-weight: bold; display: none;">PLAY AGAIN</button>
+    </div>
+    
 
     <canvas id="game"></canvas>
     <script src="script.js"></script>
