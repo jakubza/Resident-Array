@@ -8,6 +8,11 @@ body {
     display: flex;
 }
 
+html, body {
+    touch-action: manipulation;
+    overflow: hidden;
+}
+
 canvas {
   display: block;
   image-rendering: pixelated;
