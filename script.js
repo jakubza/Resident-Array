@@ -38,6 +38,7 @@ ctx.imageSmoothingEnabled = false;
 const TILE_SIZE = 16;
 const ZOOM = 5;
 const COIN_GOAL = 1500; // Goal: Collect 5 coins (500 each)
+const ENEMY_TILE = 99;
 
 const gridCols = 96;
 const gridRows = 101;
@@ -63,14 +64,14 @@ const mapRows = [
   [0,0,0,0,6,1,1,1,6,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,21,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,6,1,1,1,6,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,6,1,1,1,6,8,8,8,8,8,8,8,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,6,1,1,1,6,6,6,6,6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,6,1,1,1,6,6,6,6,6,6,6,6,6,1,1,1,99,1,1,1,99,1,1,1,1,1,1,1,1,99,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,6,6,6,6,6,6,6,6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,99,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,6,6,6,6,6,6,5,6,6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,6,6,6,6,6,6,6,6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,99,1,1,1,1,1,1,1,99,1,1,1,99,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,1,1,1,1,1,1,1,1,1,1,1,99,1,1,1,1,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,6,6,1,1,1,6,6,6,5,6,6,6,6,6,6,6,6,5,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -131,12 +132,16 @@ const mapRows = [
   ];
   
   const map = mapRows.flat();
+  const originalMap = mapRows.flat();
 
 const tileset = new Image();
 tileset.src = "assets/tileset.png";
 
 const playerImg = new Image();
 playerImg.src = "assets/player.png";
+
+const enemyImg = new Image();
+enemyImg.src = "assets/TestEnemy.png";
 
 const atlas = {
   floor_plain: { x: 32, y: 48, w: 16, h: 16 },
@@ -161,6 +166,7 @@ const atlas = {
   lower_pillar: { x: 96, y: 64, w: 16, h: 16 },
   upper_pillar: { x: 96, y: 48, w: 16, h: 16 },
   floor_pillar: { x: 96, y: 80, w: 16, h: 16 },
+  
 };
 
 function resizeCanvas() {
@@ -218,6 +224,8 @@ function getAtlasForTile(tile) {
   if (tile === 19) return atlas.lower_pillar;
   if (tile === 20) return atlas.upper_pillar;
   if (tile === 21) return atlas.floor_pillar;
+  if (tile === ENEMY_TILE) return atlas.floor_plain;
+  
 
   return null;
 }
@@ -313,6 +321,188 @@ function drawCoins() {
       TILE_SIZE * ZOOM,
       TILE_SIZE * ZOOM
     );
+  }
+}
+
+
+
+let enemies = [];
+
+function initEnemies() {
+  enemies = [];
+
+  for (let row = 0; row < mapRows.length; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      const tile = mapRows[row][col];
+
+      if (tile === ENEMY_TILE) {
+        enemies.push({
+          x: col * TILE_SIZE,
+          y: row * TILE_SIZE,
+          width: 16,
+          height: 16,
+          speed: 0.4
+        });
+      }
+    }
+  }
+
+  console.log("Enemies spawned:", enemies.length);
+}
+
+function updateEnemies() {
+  // enemy sa hýbu iba keď je miestnosť zamknutá
+  if (!roomLocked) return;
+
+  for (const enemy of enemies) {
+    // hýbu sa iba enemy v tej zamknutej miestnosti
+    if (!enemyInLockedRoom(enemy)) continue;
+
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > 0) {
+      const nextX = enemy.x + (dx / dist) * enemy.speed;
+      const nextY = enemy.y + (dy / dist) * enemy.speed;
+
+      if (isWalkable(nextX, enemy.y, enemy.width, enemy.height)) {
+        enemy.x = nextX;
+      }
+
+      if (isWalkable(enemy.x, nextY, enemy.width, enemy.height)) {
+        enemy.y = nextY;
+      }
+    }
+  }
+
+  // enemy kolízie medzi sebou
+  for (let i = 0; i < enemies.length; i++) {
+    for (let j = i + 1; j < enemies.length; j++) {
+      const a = enemies[i];
+      const b = enemies[j];
+
+      if (!enemyInLockedRoom(a) || !enemyInLockedRoom(b)) continue;
+
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      const minDist = 18;
+
+      if (dist > 0 && dist < minDist) {
+        const overlap = minDist - dist;
+        const pushX = (dx / dist) * overlap * 0.5;
+        const pushY = (dy / dist) * overlap * 0.5;
+
+        if (isWalkable(a.x - pushX, a.y, a.width, a.height)) {
+          a.x -= pushX;
+        }
+
+        if (isWalkable(a.x, a.y - pushY, a.width, a.height)) {
+          a.y -= pushY;
+        }
+
+        if (isWalkable(b.x + pushX, b.y, b.width, b.height)) {
+          b.x += pushX;
+        }
+
+        if (isWalkable(b.x, b.y + pushY, b.width, b.height)) {
+          b.y += pushY;
+        }
+      }
+    }
+  }
+}
+function drawEnemies() {
+  for (const enemy of enemies) {
+    ctx.drawImage(
+      enemyImg,
+      Math.round((enemy.x - camera.x) * ZOOM),
+      Math.round((enemy.y - camera.y) * ZOOM),
+      enemy.width * ZOOM,
+      enemy.height * ZOOM
+    );
+  }
+}
+
+let roomLocked = false;
+let doorsClosed = false;
+
+const LOCK_DOOR_TILE = 6; // alebo daj 6 ak chceš normálnu stenu
+
+const lockedRoom = {
+  x: 16,
+  y: 13,
+  w: 26,
+  h: 16,
+
+  doors: [
+    { x: 16, y: 20 },
+    { x: 16, y: 19 },
+    { x: 16, y: 18 },
+    { x: 20, y: 27 },
+    { x: 21, y: 27 },
+    { x: 19, y: 27 },
+  ]
+};
+
+function isPlayerInLockedRoom() {
+  const playerCol = Math.floor((player.x + player.width / 2) / TILE_SIZE);
+  const playerRow = Math.floor((player.y + player.height / 2) / TILE_SIZE);
+
+  // menšia trigger zóna vo vnútri miestnosti
+  return (
+    playerCol >= lockedRoom.x + 3 &&
+    playerCol <= lockedRoom.x + lockedRoom.w - 3 &&
+    playerRow >= lockedRoom.y + 3 &&
+    playerRow <= lockedRoom.y + lockedRoom.h - 3
+  );
+}
+
+function enemyInLockedRoom(enemy) {
+  const enemyCol = Math.floor((enemy.x + enemy.width / 2) / TILE_SIZE);
+  const enemyRow = Math.floor((enemy.y + enemy.height / 2) / TILE_SIZE);
+
+  return (
+    enemyCol >= lockedRoom.x &&
+    enemyCol <= lockedRoom.x + lockedRoom.w &&
+    enemyRow >= lockedRoom.y &&
+    enemyRow <= lockedRoom.y + lockedRoom.h
+  );
+}
+
+function enemiesInLockedRoomAlive() {
+  return enemies.some(enemy => enemyInLockedRoom(enemy));
+}
+
+function closeRoomDoors() {
+  if (doorsClosed) return;
+
+  for (const door of lockedRoom.doors) {
+    map[door.y * gridCols + door.x] = LOCK_DOOR_TILE;
+  }
+
+  doorsClosed = true;
+}
+
+function openRoomDoors() {
+  for (const door of lockedRoom.doors) {
+    map[door.y * gridCols + door.x] = 1;
+  }
+
+  doorsClosed = false;
+}
+
+function updateRoomLock() {
+  if (!roomLocked && isPlayerInLockedRoom() && enemiesInLockedRoomAlive()) {
+    roomLocked = true;
+    closeRoomDoors();
+  }
+
+  if (roomLocked && !enemiesInLockedRoomAlive()) {
+    roomLocked = false;
+    openRoomDoors();
   }
 }
 
@@ -586,7 +776,17 @@ function handleWin() {
   }, 2000);
 }
 
+// ==========================
+// Restart Game
+// ==========================
+
 function restartGame() {
+
+  for (let i = 0; i < map.length; i++) {
+  map[i] = originalMap[i];
+  }
+
+roomLocked = false;
   if (animationId) {
     cancelAnimationFrame(animationId);
     animationId = null;
@@ -618,18 +818,39 @@ function restartGame() {
 
   ptas = 0;
   initCoins();
+  
 
   player.hp = player.maxHp;
-  
+  initEnemies();
   spawnPlayer();
+  updateEnemies();
   updateCamera();
+
 
   gameRunning = true;
   gameLoop();
+  roomLocked = false;
+  doorsClosed = false;
+  openRoomDoors();
 }
 
 if (restartBtn) restartBtn.addEventListener("click", restartGame);
 if (winRestartBtn) winRestartBtn.addEventListener("click", restartGame);
+
+function collidesWithEnemy(x, y, width, height) {
+  for (const enemy of enemies) {
+    if (
+      x < enemy.x + enemy.width &&
+      x + width > enemy.x &&
+      y < enemy.y + enemy.height &&
+      y + height > enemy.y
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // ==========================
 // UPDATE
@@ -637,13 +858,20 @@ if (winRestartBtn) winRestartBtn.addEventListener("click", restartGame);
 function update() {
   if (player.hp <= 0 || winSequenceTriggered) return;
 
+  let currentSpeed = player.speed;
+
+  if (collidesWithEnemy(player.x, player.y, player.width, player.height)) {
+    currentSpeed = player.speed * 0.7;
+    player.hp -= 0.3; // damage keď si v enemy
+  }
+
   let nextX = player.x;
   let nextY = player.y;
 
-  if (keys["w"] || keys["ArrowUp"]) nextY -= player.speed;
-  if (keys["s"] || keys["ArrowDown"]) nextY += player.speed;
-  if (keys["a"] || keys["ArrowLeft"]) nextX -= player.speed;
-  if (keys["d"] || keys["ArrowRight"]) nextX += player.speed;
+  if (keys["w"] || keys["ArrowUp"]) nextY -= currentSpeed;
+  if (keys["s"] || keys["ArrowDown"]) nextY += currentSpeed;
+  if (keys["a"] || keys["ArrowLeft"]) nextX -= currentSpeed;
+  if (keys["d"] || keys["ArrowRight"]) nextX += currentSpeed;
 
   if (keys["-"]) player.hp -= 1;
   if (keys["+"]) player.hp = Math.min(player.maxHp, player.hp + 1);
@@ -657,6 +885,9 @@ function update() {
   }
 
   checkCoinCollision();
+  updateRoomLock();
+  updateEnemies();
+  
 
   if (player.hp <= 0) {
     player.hp = 0;
@@ -665,7 +896,6 @@ function update() {
 
   updateCamera();
 }
-
 // ==========================
 // GAME LOOP
 // ==========================
@@ -678,6 +908,7 @@ function gameLoop() {
 
   drawMap();
   drawCoins();
+  drawEnemies();
 
   ctx.save();
 
@@ -718,27 +949,33 @@ function startGame() {
 
   ptas = 0;
   initCoins();
+  initEnemies();
+  
 
   player.hp = player.maxHp;
   
-
+  initEnemies();
   spawnPlayer();
   updateCamera();
 
   gameRunning = true;
 
   Promise.all([
-    new Promise((res) => {
-      if (tileset.complete) res();
-      else tileset.onload = res;
-    }),
-    new Promise((res) => {
-      if (playerImg.complete) res();
-      else playerImg.onload = res;
-    })
-  ]).then(() => {
-    gameLoop();
-  });
+  new Promise((res) => {
+    if (tileset.complete) res();
+    else tileset.onload = res;
+  }),
+  new Promise((res) => {
+    if (playerImg.complete) res();
+    else playerImg.onload = res;
+  }),
+  new Promise((res) => {
+    if (enemyImg.complete) res();
+    else enemyImg.onload = res;
+  })
+]).then(() => {
+  gameLoop();
+});
 }
 
 if (startBtn) startBtn.addEventListener("click", startGame);
