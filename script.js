@@ -241,7 +241,10 @@ const player = {
   speed: 1,
   hp: 100,
   maxHp: 100,
-  pulseOffset: 0
+  pulseOffset: 0,
+  attackDamage: 50,
+  attackRange: 35,
+  attackCooldown: 0
 };
 
 function spawnPlayer() {
@@ -341,7 +344,8 @@ function initEnemies() {
           y: row * TILE_SIZE,
           width: 16,
           height: 16,
-          speed: 0.4
+          speed: 0.4,
+          hp: 100
         });
       }
     }
@@ -351,11 +355,9 @@ function initEnemies() {
 }
 
 function updateEnemies() {
-  // enemy sa hýbu iba keď je miestnosť zamknutá
   if (!roomLocked) return;
 
   for (const enemy of enemies) {
-    // hýbu sa iba enemy v tej zamknutej miestnosti
     if (!enemyInLockedRoom(enemy)) continue;
 
     const dx = player.x - enemy.x;
@@ -375,6 +377,49 @@ function updateEnemies() {
       }
     }
   }
+
+  for (let i = 0; i < enemies.length; i++) {
+    for (let j = i + 1; j < enemies.length; j++) {
+      const a = enemies[i];
+      const b = enemies[j];
+
+      if (!enemyInLockedRoom(a) || !enemyInLockedRoom(b)) continue;
+
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const minDist = 18;
+
+      if (dist > 0 && dist < minDist) {
+        const overlap = minDist - dist;
+        const pushX = (dx / dist) * overlap * 0.5;
+        const pushY = (dy / dist) * overlap * 0.5;
+
+        a.x -= pushX;
+        a.y -= pushY;
+        b.x += pushX;
+        b.y += pushY;
+      }
+    }
+  }
+}
+
+function attackEnemies() {
+  if (player.attackCooldown > 0) return;
+
+  for (const enemy of enemies) {
+    const dx = enemy.x + enemy.width / 2 - (player.x + player.width / 2);
+    const dy = enemy.y + enemy.height / 2 - (player.y + player.height / 2);
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist <= player.attackRange) {
+      enemy.hp -= player.attackDamage;
+    }
+  }
+
+  enemies = enemies.filter(enemy => enemy.hp > 0);
+  player.attackCooldown = 25;
+}
 
   // enemy kolízie medzi sebou
   for (let i = 0; i < enemies.length; i++) {
@@ -413,7 +458,7 @@ function updateEnemies() {
       }
     }
   }
-}
+
 function drawEnemies() {
   for (const enemy of enemies) {
     ctx.drawImage(
@@ -697,18 +742,20 @@ let winSequenceTriggered = false;
 
 const keys = {};
 
+let attackPressed = false;
+
 window.addEventListener("keydown", (e) => {
   keys[e.key] = true;
+
 });
 
 window.addEventListener("keyup", (e) => {
   keys[e.key] = false;
+
 });
 
-function clearKeys() {
-  for (const key in keys) {
-    keys[key] = false;
-  }
+if (e.code === "Space") {
+  e.preventDefault();
 }
 
 // ==========================
@@ -884,6 +931,19 @@ function update() {
     player.y = nextY;
   }
 
+  if ((keys[" "] || keys["Spacebar"]) && !attackPressed && player.attackCooldown <= 0) {
+  attackPressed = true;
+  attackEnemies();
+}
+
+if (!(keys[" "] || keys["Spacebar"])) {
+  attackPressed = false;
+}
+
+if (player.attackCooldown > 0) {
+  player.attackCooldown--;
+}
+
   checkCoinCollision();
   updateRoomLock();
   updateEnemies();
@@ -936,6 +996,12 @@ function gameLoop() {
 // ==========================
 // START
 // ==========================
+function clearKeys() {
+  for (let key in keys) {
+    keys[key] = false;
+  }
+}
+
 function startGame() {
   if (animationId) {
     cancelAnimationFrame(animationId);
