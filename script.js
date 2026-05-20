@@ -39,6 +39,8 @@ const TILE_SIZE = 16;
 const ZOOM = 5;
 const COIN_GOAL = 1500; // Goal: Collect 5 coins (500 each)
 const ENEMY_TILE = 99;
+const HEAL_TILE = 98;
+const HEAL_AMOUNT = 50;
 
 const gridCols = 96;
 const gridRows = 101;
@@ -51,7 +53,7 @@ const mapRows = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,8,8,8,8,14,15,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,6,6,5,6,16,17,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,6,1,1,1,4,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,6,1,1,1,4,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,98,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,6,1,1,1,1,1,1,1,1,18,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,18,1,1,1,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,5,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,6,1,1,1,1,1,1,1,1,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -143,6 +145,9 @@ playerImg.src = "assets/player.png";
 const enemyImg = new Image();
 enemyImg.src = "assets/TestEnemy.png";
 
+const healImg = new Image();
+healImg.src = "assets/Kytek.png";
+
 const atlas = {
   floor_plain: { x: 32, y: 48, w: 16, h: 16 },
   corridor: { x: 32, y: 48, w: 16, h: 16 },
@@ -225,6 +230,7 @@ function getAtlasForTile(tile) {
   if (tile === 20) return atlas.upper_pillar;
   if (tile === 21) return atlas.floor_pillar;
   if (tile === ENEMY_TILE) return atlas.floor_plain;
+  if (tile === HEAL_TILE) return atlas.floor_plain;
   
 
   return null;
@@ -321,6 +327,56 @@ function drawCoins() {
       a.h,
       Math.round((coin.x - camera.x) * ZOOM),
       Math.round((coin.y - camera.y) * ZOOM),
+      TILE_SIZE * ZOOM,
+      TILE_SIZE * ZOOM
+    );
+  }
+}
+
+let heals = [];
+
+function initHeals() {
+  heals = [];
+
+  for (let row = 0; row < mapRows.length; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      const tile = mapRows[row][col];
+
+      if (tile === HEAL_TILE) {
+        heals.push({
+          x: col * TILE_SIZE,
+          y: row * TILE_SIZE,
+          collected: false
+        });
+      }
+    }
+  }
+}
+
+function checkHealCollision() {
+  for (const heal of heals) {
+    if (heal.collected) continue;
+
+    if (
+      player.x < heal.x + TILE_SIZE &&
+      player.x + player.width > heal.x &&
+      player.y < heal.y + TILE_SIZE &&
+      player.y + player.height > heal.y
+    ) {
+      heal.collected = true;
+      player.hp = Math.min(player.maxHp, player.hp + HEAL_AMOUNT);
+    }
+  }
+}
+
+function drawHeals() {
+  for (const heal of heals) {
+    if (heal.collected) continue;
+
+    ctx.drawImage(
+      healImg,
+      Math.round((heal.x - camera.x) * ZOOM),
+      Math.round((heal.y - camera.y) * ZOOM),
       TILE_SIZE * ZOOM,
       TILE_SIZE * ZOOM
     );
@@ -872,6 +928,9 @@ roomLocked = false;
   spawnPlayer();
   updateEnemies();
   updateCamera();
+  initCoins();
+  initHeals();
+  initEnemies();
 
 
   gameRunning = true;
@@ -945,6 +1004,7 @@ if (player.attackCooldown > 0) {
 }
 
   checkCoinCollision();
+  checkHealCollision();
   updateRoomLock();
   updateEnemies();
   
@@ -968,6 +1028,7 @@ function gameLoop() {
 
   drawMap();
   drawCoins();
+  drawHeals();
   drawEnemies();
 
   ctx.save();
@@ -1016,11 +1077,15 @@ function startGame() {
   ptas = 0;
   initCoins();
   initEnemies();
+  initCoins();
+  initHeals();
+  initEnemies();
+  
   
 
   player.hp = player.maxHp;
   
-  initEnemies();
+  
   spawnPlayer();
   updateCamera();
 
@@ -1038,7 +1103,11 @@ function startGame() {
   new Promise((res) => {
     if (enemyImg.complete) res();
     else enemyImg.onload = res;
-  })
+  }),
+  new Promise((res) => {
+  if (healImg.complete) res();
+  else healImg.onload = res;
+})
 ]).then(() => {
   gameLoop();
 });
