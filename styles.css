@@ -33,6 +33,7 @@ canvas {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    zoom: 1.5;
 }
 
 #start {
@@ -149,4 +150,18 @@ canvas {
         cursor: pointer;
         letter-spacing: 2px;
         transition: color 0.3s;
+}
+
+
+
+@media (max-width: 1400px) {
+    #menu {
+        transform: scale(1.2);
+    }
+}
+
+@media (max-width: 900px) {
+    #menu {
+        transform: scale(1);
+    }
 }
