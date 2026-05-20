@@ -36,7 +36,7 @@ ctx.imageSmoothingEnabled = false;
 // SETTINGS & GOALS
 // =====================================
 const TILE_SIZE = 16;
-const ZOOM = 5;
+var ZOOM = 5;
 const COIN_GOAL = 1500; // Goal: Collect 5 coins (500 each)
 const ENEMY_TILE = 99;
 const HEAL_TILE = 98;
@@ -175,6 +175,7 @@ const atlas = {
 };
 
 function resizeCanvas() {
+  updateZoom();
   const dpr = window.devicePixelRatio || 1;
 
   canvas.style.width = window.innerWidth + "px";
@@ -188,6 +189,16 @@ function resizeCanvas() {
   ctx.imageSmoothingEnabled = false;
   ctx.webkitImageSmoothingEnabled = false;
   ctx.mozImageSmoothingEnabled = false;
+}
+
+function updateZoom() {
+  if (window.innerWidth < 900) {
+    ZOOM = 3;
+  } else if (window.innerWidth < 1400) {
+    ZOOM = 4;
+  } else {
+    ZOOM = 5;
+  }
 }
 
 resizeCanvas();
