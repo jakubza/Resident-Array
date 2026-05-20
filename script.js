@@ -37,7 +37,8 @@ ctx.imageSmoothingEnabled = false;
 // =====================================
 const TILE_SIZE = 16;
 const isGithubPages = window.location.hostname.includes("github.io");
-const ZOOM = isGithubPages ? 5 : 5;
+
+var ZOOM = isGithubPages ? 5 : 4;
 const COIN_GOAL = 1500; // Goal: Collect 5 coins (500 each)
 const ENEMY_TILE = 99;
 const HEAL_TILE = 98;

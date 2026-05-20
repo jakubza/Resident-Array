@@ -36,6 +36,10 @@ canvas {
     zoom: 1;
 }
 
+.github-pages #menu {
+  transform: scale(1.5);
+}
+
 #start {
     background-color: rgb(34, 34, 34);
     border: none;
