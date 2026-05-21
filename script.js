@@ -159,14 +159,37 @@ const mapRows = [
 const tileset = new Image(); // nacita tileset obrazok
 tileset.src = "assets/tileset.png";
 
-const playerImg = new Image(); // textura hraca
-playerImg.src = "assets/player.png";
-
 const enemyImg = new Image(); // textura enemies
 enemyImg.src = "assets/TestEnemy.png";
 
 const healImg = new Image(); // textura heal itemu
 healImg.src = "assets/Kytek.png";
+
+const playerFront = new Image();
+playerFront.src = "assets/player.png";
+
+const playerBack = new Image();
+playerBack.src = "assets/LeonB.png";
+
+const playerWalk1 = new Image();
+playerWalk1.src = "assets/LeonFWalk1.png";
+
+const playerWalk2 = new Image();
+playerWalk2.src = "assets/LeonFWalk2.png";
+
+const playerBackWalk1 = new Image();
+playerBackWalk1.src = "assets/LeonBWalk1.png";
+
+const playerBackWalk2 = new Image();
+playerBackWalk2.src = "assets/LeonBWalk2.png";
+
+let currentDirection = "front";
+
+
+let currentPlayerSprite = playerFront;
+
+let walkFrame = 0;
+let walkTimer = 0;
 
 const atlas = {
   floor_plain: { x: 32, y: 48, w: 16, h: 16 },
@@ -1111,8 +1134,15 @@ function update() {
   let nextX = player.x;
   let nextY = player.y;
 
-  if (keys["w"] || keys["ArrowUp"]) nextY -= currentSpeed;
-  if (keys["s"] || keys["ArrowDown"]) nextY += currentSpeed;
+  if (keys["w"] || keys["ArrowUp"]) {
+    nextY -= currentSpeed;
+    currentDirection = "back";
+  }
+
+  if (keys["s"] || keys["ArrowDown"]) {
+    nextY += currentSpeed;
+    currentDirection = "front";
+  }
   if (keys["a"] || keys["ArrowLeft"]) nextX -= currentSpeed;
   if (keys["d"] || keys["ArrowRight"]) nextX += currentSpeed;
 
@@ -1127,6 +1157,57 @@ function update() {
     player.y = nextY;
   }
 
+  // =====================================
+// PLAYER WALK ANIMATION
+// =====================================
+
+const moving =
+    keys["w"] ||
+    keys["a"] ||
+    keys["s"] ||
+    keys["d"];
+
+if (moving) {
+
+    walkTimer++;
+
+    if (walkTimer >= 25) {
+
+        walkTimer = 0;
+
+        walkFrame++;
+
+        if (walkFrame > 1) {
+            walkFrame = 0;
+        }
+
+        if (currentDirection === "front") {
+
+            if (walkFrame === 0) {
+                currentPlayerSprite = playerWalk1;
+            } else {
+                currentPlayerSprite = playerWalk2;
+            }
+
+        } else {
+
+            if (walkFrame === 0) {
+                currentPlayerSprite = playerBackWalk1;
+            } else {
+                currentPlayerSprite = playerBackWalk2;
+            }
+        }
+    }
+
+} else {
+
+    if (currentDirection === "front") {
+        currentPlayerSprite = playerFront;
+    } else {
+        currentPlayerSprite = playerBack;
+    }
+}
+
   if ((keys[" "] || keys["Spacebar"]) && !attackPressed && player.attackCooldown <= 0) {
   attackPressed = true;
   attackEnemies();
@@ -1139,6 +1220,7 @@ if (!(keys[" "] || keys["Spacebar"])) {
 if (player.attackCooldown > 0) {
   player.attackCooldown--;
 }
+
 
 
 
@@ -1185,7 +1267,7 @@ function gameLoop() {
     ctx.rotate(Math.PI / 2);
   }
 
-  ctx.drawImage(playerImg, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.drawImage(currentPlayerSprite, -drawW / 2, -drawH / 2, drawW, drawH);
 
   ctx.restore();
 
@@ -1234,21 +1316,29 @@ function startGame() {
 
   Promise.all([
   new Promise((res) => {
-    if (tileset.complete) res();
-    else tileset.onload = res;
-  }),
-  new Promise((res) => {
-    if (playerImg.complete) res();
-    else playerImg.onload = res;
-  }),
-  new Promise((res) => {
-    if (enemyImg.complete) res();
-    else enemyImg.onload = res;
-  }),
-  new Promise((res) => {
-  if (healImg.complete) res();
-  else healImg.onload = res;
-})
+  if (playerFront.complete) res();
+  else playerFront.onload = res;
+}),
+new Promise((res) => {
+  if (playerWalk1.complete) res();
+  else playerWalk1.onload = res;
+}),
+new Promise((res) => {
+  if (playerWalk2.complete) res();
+  else playerWalk2.onload = res;
+}),
+new Promise((res) => {
+  if (playerBackWalk1.complete) res();
+  else playerBackWalk1.onload = res;
+}),
+new Promise((res) => {
+  if (playerBackWalk2.complete) res();
+  else playerBackWalk2.onload = res;
+}),
+new Promise((res) => {
+  if (playerBack.complete) res();
+  else playerBack.onload = res;
+}),
 ]).then(() => {
   gameLoop();
 });
