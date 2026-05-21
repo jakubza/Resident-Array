@@ -967,7 +967,7 @@ roomLocked = false;
   roomLocked = false;
   doorsClosed = false;
   openRoomDoors();
-  gameLoop();
+  
   
 }
 
