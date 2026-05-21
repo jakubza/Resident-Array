@@ -1,12 +1,14 @@
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("game"); // canvas hry
+const ctx = canvas.getContext("2d"); // 2D kreslenie
 
+// Zakaze CTRL + scroll zoom v prehliadaci
 document.addEventListener("wheel", (e) => {
     if (e.ctrlKey) {
         e.preventDefault();
     }
 }, { passive: false });
 
+// Zakaze CTRL + PLUS/MINUS zoom
 document.addEventListener("keydown", (e) => {
     if (
         (e.ctrlKey || e.metaKey) &&
@@ -16,34 +18,50 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+// MENU ELEMENTY
 const menu = document.getElementById("menu");
 const startBtn = document.getElementById("start");
 const controlsBtn = document.getElementById("controls");
 const closeBtn = document.getElementById("closeControls");
 const overlay = document.getElementById("controlsOverlay");
 
+// DEATH SCREEN
 const deathScreen = document.getElementById("deathScreen");
 const restartBtn = document.getElementById("restartBtn");
 
-// New Win Screen Elements
+// WIN SCREEN
 const winScreen = document.getElementById("winScreen");
 const winRestartBtn = document.getElementById("winRestartBtn");
 const winText = document.getElementById("winText");
 
+// Vypne rozmazanie pixel artu
 ctx.imageSmoothingEnabled = false;
 
 // =====================================
 // SETTINGS & GOALS
 // =====================================
-const TILE_SIZE = 16;
+
+const TILE_SIZE = 16; // velkost jedneho tile
+
+// Zisti ci hra bezi na GitHub Pages
 const isGithubPages = window.location.hostname.includes("github.io");
 
+// Zoom hry
+// GitHub Pages = vacsi zoom
+// Live Server = mensi zoom
 var ZOOM = isGithubPages ? 6 : 5;
-const COIN_GOAL = 1500; // Goal: Collect 5 coins (500 each)
-const ENEMY_TILE = 99;
-const HEAL_TILE = 98;
+
+// Kolko coinov treba na vyhru
+const COIN_GOAL = 1500;
+
+// Specialne ID tileov
+const ENEMY_TILE = 99; // enemy spawn
+const HEAL_TILE = 98; // heal item
+
+// Kolko HP heal item prida
 const HEAL_AMOUNT = 50;
 
+// Velkost mapy
 const gridCols = 96;
 const gridRows = 101;
 
@@ -138,16 +156,16 @@ const mapRows = [
   const map = mapRows.flat();
   const originalMap = mapRows.flat();
 
-const tileset = new Image();
+const tileset = new Image(); // nacita tileset obrazok
 tileset.src = "assets/tileset.png";
 
-const playerImg = new Image();
+const playerImg = new Image(); // textura hraca
 playerImg.src = "assets/player.png";
 
-const enemyImg = new Image();
+const enemyImg = new Image(); // textura enemies
 enemyImg.src = "assets/TestEnemy.png";
 
-const healImg = new Image();
+const healImg = new Image(); // textura heal itemu
 healImg.src = "assets/Kytek.png";
 
 const atlas = {
@@ -543,7 +561,7 @@ function drawEnemies() {
 let roomLocked = false;
 let doorsClosed = false;
 
-const LOCK_DOOR_TILE = 6; // alebo daj 6 ak chceš normálnu stenu
+const LOCK_DOOR_TILE = 6;
 
 const lockedRoom = {
   x: 16,
@@ -823,9 +841,7 @@ window.addEventListener("keyup", (e) => {
 
 });
 
-if (e.code === "Space") {
-  e.preventDefault();
-}
+
 
 // ==========================
 // WIN / DEATH
@@ -951,6 +967,8 @@ roomLocked = false;
   roomLocked = false;
   doorsClosed = false;
   openRoomDoors();
+  gameLoop();
+  
 }
 
 if (restartBtn) restartBtn.addEventListener("click", restartGame);
