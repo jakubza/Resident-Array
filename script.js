@@ -384,9 +384,31 @@ function initHeals() {
   }
 }
 
+
+
 function checkHealCollision() {
+
+  if (herbPromptActive) return;
+
   for (const heal of heals) {
+
     if (heal.collected) continue;
+
+    // ignore herb after ESC until player walks away
+    if (heal === herbIgnore) {
+
+      const stillTouching =
+        player.x < heal.x + TILE_SIZE &&
+        player.x + player.width > heal.x &&
+        player.y < heal.y + TILE_SIZE &&
+        player.y + player.height > heal.y;
+
+      if (stillTouching) {
+        continue;
+      } else {
+        herbIgnore = null;
+      }
+    }
 
     if (
       player.x < heal.x + TILE_SIZE &&
@@ -394,8 +416,11 @@ function checkHealCollision() {
       player.y < heal.y + TILE_SIZE &&
       player.y + player.height > heal.y
     ) {
-      heal.collected = true;
-      player.hp = Math.min(player.maxHp, player.hp + HEAL_AMOUNT);
+
+      herbPromptActive = true;
+      currentHerb = heal;
+
+      break;
     }
   }
 }
@@ -819,6 +844,49 @@ function drawUI() {
   ctx.restore();
 }
 
+function drawHerbPopup() {
+
+  if (!herbPromptActive) return;
+
+  const boxWidth = 500;
+  const boxHeight = 160;
+
+  const x = window.innerWidth / 2 - boxWidth / 2;
+  const y = window.innerHeight - 240;
+
+  // dark background
+  ctx.fillStyle = "rgba(0,0,0,0.85)";
+  ctx.fillRect(x, y, boxWidth, boxHeight);
+
+  // border
+  ctx.strokeStyle = "#d8c38f";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(x, y, boxWidth, boxHeight);
+
+  // title
+  ctx.fillStyle = "#d8c38f";
+  ctx.font = "bold 28px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("You found a Gherb.", x + boxWidth / 2, y + 50);
+
+  // controls
+  ctx.font = "20px serif";
+  ctx.fillText(
+    "ENTER = Consume",
+    x + boxWidth / 2,
+    y + 105
+  );
+
+  // heal text
+  ctx.fillStyle = "#6dff8a";
+  ctx.font = "18px serif";
+  ctx.fillText(
+    "+" + HEAL_AMOUNT + " HP",
+    x + boxWidth / 2,
+    y + 135
+  );
+}
+
 // ==========================
 // GAME STATE
 // ==========================
@@ -826,13 +894,47 @@ let gameRunning = false;
 let animationId = null;
 let deathSequenceTriggered = false;
 let winSequenceTriggered = false;
+let herbPromptActive = false;
+let currentHerb = null;
+let herbIgnore = null;
 
 const keys = {};
 
 let attackPressed = false;
 
 window.addEventListener("keydown", (e) => {
+
   keys[e.key] = true;
+
+  // HERB POPUP CONTROLS
+  if (herbPromptActive) {
+
+    // ENTER = consume
+    if (e.key === "Enter") {
+
+      if (currentHerb && !currentHerb.collected) {
+
+        currentHerb.collected = true;
+
+        player.hp = Math.min(
+          player.maxHp,
+          player.hp + HEAL_AMOUNT
+        );
+      }
+
+      herbPromptActive = false;
+      currentHerb = null;
+    }
+
+    // ESC = decline
+    if (e.key === "Escape") {
+
+      herbIgnore = currentHerb;
+    
+      herbPromptActive = false;
+      currentHerb = null;
+    }
+  }
 
 });
 
@@ -993,6 +1095,10 @@ function collidesWithEnemy(x, y, width, height) {
 // UPDATE
 // ==========================
 function update() {
+  if (herbPromptActive) {
+    updateCamera();
+    return;
+  }
   if (player.hp <= 0 || winSequenceTriggered) return;
 
   let currentSpeed = player.speed;
@@ -1033,6 +1139,9 @@ if (!(keys[" "] || keys["Spacebar"])) {
 if (player.attackCooldown > 0) {
   player.attackCooldown--;
 }
+
+
+
 
   checkCoinCollision();
   checkHealCollision();
@@ -1081,6 +1190,7 @@ function gameLoop() {
   ctx.restore();
 
   drawUI();
+  drawHerbPopup();
 
   animationId = requestAnimationFrame(gameLoop);
 }
