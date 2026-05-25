@@ -53,7 +53,7 @@ if (isGithubPages) {
 // Zoom hry
 // GitHub Pages = vacsi zoom
 // Live Server = mensi zoom
-var ZOOM = isGithubPages ? 7 : 5;
+var ZOOM = isGithubPages ? 5 : 5;
 
 // Kolko coinov treba na vyhru
 const COIN_GOAL = 1500;
