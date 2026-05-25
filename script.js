@@ -240,20 +240,14 @@ const atlas = {
 };
 
 function resizeCanvas() {
-  updateZoom();
-  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  canvas.style.width = window.innerWidth + "px";
-  canvas.style.height = window.innerHeight + "px";
+  canvas.style.width = "100vw";
+  canvas.style.height = "100vh";
 
-  canvas.width = Math.floor(window.innerWidth * dpr);
-  canvas.height = Math.floor(window.innerHeight * dpr);
-
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.imageSmoothingEnabled = false;
-  ctx.webkitImageSmoothingEnabled = false;
-  ctx.mozImageSmoothingEnabled = false;
 }
 
 function updateZoom() {
