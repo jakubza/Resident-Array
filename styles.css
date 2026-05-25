@@ -37,11 +37,7 @@ canvas {
 }
 
 .github-pages #menu {
-  transform: scale(2);
-}
-
-.github-pages #menu {
-  transform: scale(1.5);
+  transform: scale(1);
   transform-origin: center;
 }
 
