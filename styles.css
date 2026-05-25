@@ -40,6 +40,16 @@ canvas {
   transform: scale(2);
 }
 
+.github-pages #menu {
+  transform: scale(1.5);
+  transform-origin: center;
+}
+
+.github-pages canvas {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
 #start {
     background-color: rgb(34, 34, 34);
     border: none;

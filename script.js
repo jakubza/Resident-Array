@@ -46,10 +46,14 @@ const TILE_SIZE = 16; // velkost jedneho tile
 // Zisti ci hra bezi na GitHub Pages
 const isGithubPages = window.location.hostname.includes("github.io");
 
+if (isGithubPages) {
+  document.body.classList.add("github-pages");
+}
+
 // Zoom hry
 // GitHub Pages = vacsi zoom
 // Live Server = mensi zoom
-var ZOOM = isGithubPages ? 6 : 5;
+var ZOOM = isGithubPages ? 7 : 5;
 
 // Kolko coinov treba na vyhru
 const COIN_GOAL = 1500;
