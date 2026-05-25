@@ -35,10 +35,6 @@ canvas {
     gap: 10px;
 }
 
-.github-pages #menu {
-  transform: scale(1);
-  transform-origin: center;
-}
 
 .github-pages canvas {
   width: 100vw !important;
