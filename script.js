@@ -44,9 +44,8 @@ ctx.imageSmoothingEnabled = false;
 const TILE_SIZE = 16; // velkost jedneho tile
 
 
-
 // Live Server = mensi zoom
-var ZOOM = isGithubPages ? 5 : 5;
+var ZOOM = 5;
 
 // Kolko coinov treba na vyhru
 const COIN_GOAL = 1500;
