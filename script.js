@@ -268,10 +268,10 @@ window.addEventListener("resize", resizeCanvas);
 function drawAtlasTile(atlasX, atlasY, atlasW, atlasH, screenX, screenY, screenW, screenH) {
   ctx.drawImage(
     tileset,
-    atlasX,
-    atlasY,
-    atlasW,
-    atlasH,
+    atlasX + 0.5,
+    atlasY + 0.5,
+    atlasW - 1,
+    atlasH - 1,
     Math.round(screenX),
     Math.round(screenY),
     Math.round(screenW),
@@ -399,8 +399,8 @@ function drawCoins() {
       a.h,
       Math.round((coin.x - camera.x) * ZOOM),
       Math.round((coin.y - camera.y) * ZOOM),
-      TILE_SIZE * ZOOM,
-      TILE_SIZE * ZOOM
+      TILE_SIZE * ZOOM + 1,
+      TILE_SIZE * ZOOM + 1
     );
   }
 }
@@ -769,6 +769,8 @@ function isWalkable(x, y, width, height) {
 // DRAW
 // ==========================
 function drawMap() {
+  const camX = Math.round(camera.x);
+  const camY = Math.round(camera.y);
   for (let row = 0; row < mapRows.length; row++) {
     for (let col = 0; col < gridCols; col++) {
       const tile = map[row * gridCols + col];
@@ -782,10 +784,10 @@ function drawMap() {
         atlasTile.y,
         atlasTile.w,
         atlasTile.h,
-        Math.round((col * TILE_SIZE - camera.x) * ZOOM),
-        Math.round((row * TILE_SIZE - camera.y) * ZOOM),
-        TILE_SIZE * ZOOM,
-        TILE_SIZE * ZOOM
+        Math.round((col * TILE_SIZE - camX) * ZOOM),
+        Math.round((row * TILE_SIZE - camY) * ZOOM),
+        TILE_SIZE * ZOOM + 1,
+        TILE_SIZE * ZOOM + 1
       );
     }
   }
@@ -1163,9 +1165,9 @@ function update() {
   }
 
   if (keys["a"] || keys["ArrowLeft"]) {
-  nextX -= currentSpeed;
-  currentDirection = "left";
-}
+    nextX -= currentSpeed;
+    currentDirection = "left";
+  }
 
   if (keys["d"] || keys["ArrowRight"]) {
     nextX += currentSpeed;
@@ -1188,57 +1190,57 @@ function update() {
   // =====================================
 
   const moving =
-  keys["w"] ||
-  keys["ArrowUp"] ||
-  keys["a"] ||
-  keys["ArrowLeft"] ||
-  keys["s"] ||
-  keys["ArrowDown"] ||
-  keys["d"] ||
-  keys["ArrowRight"];
+    keys["w"] ||
+    keys["ArrowUp"] ||
+    keys["a"] ||
+    keys["ArrowLeft"] ||
+    keys["s"] ||
+    keys["ArrowDown"] ||
+    keys["d"] ||
+    keys["ArrowRight"];
 
-if (moving) {
-  walkTimer++;
+  if (moving) {
+    walkTimer++;
 
-  if (walkTimer >= 25) {
+    if (walkTimer >= 25) {
+      walkTimer = 0;
+      walkFrame++;
+
+      if (walkFrame > 1) {
+        walkFrame = 0;
+      }
+    }
+
+    if (currentDirection === "front") {
+      currentPlayerSprite = walkFrame === 0 ? playerWalk1 : playerWalk2;
+
+    } else if (currentDirection === "back") {
+      currentPlayerSprite = walkFrame === 0 ? playerBackWalk1 : playerBackWalk2;
+
+    } else if (currentDirection === "right") {
+      currentPlayerSprite = walkFrame === 0 ? playerRightWalk1 : playerRightWalk2;
+
+    } else if (currentDirection === "left") {
+      currentPlayerSprite = walkFrame === 0 ? playerLeftWalk1 : playerLeftWalk2;
+    }
+
+  } else {
     walkTimer = 0;
-    walkFrame++;
+    walkFrame = 0;
 
-    if (walkFrame > 1) {
-      walkFrame = 0;
+    if (currentDirection === "front") {
+      currentPlayerSprite = playerFront;
+
+    } else if (currentDirection === "back") {
+      currentPlayerSprite = playerBack;
+
+    } else if (currentDirection === "right") {
+      currentPlayerSprite = playerRightIdle;
+
+    } else if (currentDirection === "left") {
+      currentPlayerSprite = playerLeftIdle;
     }
   }
-
-  if (currentDirection === "front") {
-    currentPlayerSprite = walkFrame === 0 ? playerWalk1 : playerWalk2;
-
-  } else if (currentDirection === "back") {
-    currentPlayerSprite = walkFrame === 0 ? playerBackWalk1 : playerBackWalk2;
-
-  } else if (currentDirection === "right") {
-    currentPlayerSprite = walkFrame === 0 ? playerRightWalk1 : playerRightWalk2;
-
-  } else if (currentDirection === "left") {
-    currentPlayerSprite = walkFrame === 0 ? playerLeftWalk1 : playerLeftWalk2;
-  }
-
-} else {
-  walkTimer = 0;
-  walkFrame = 0;
-
-  if (currentDirection === "front") {
-    currentPlayerSprite = playerFront;
-
-  } else if (currentDirection === "back") {
-    currentPlayerSprite = playerBack;
-
-  } else if (currentDirection === "right") {
-    currentPlayerSprite = playerRightIdle;
-
-  } else if (currentDirection === "left") {
-    currentPlayerSprite = playerLeftIdle;
-  }
-}
 
   if ((keys[" "] || keys["Spacebar"]) && !attackPressed && player.attackCooldown <= 0) {
     attackPressed = true;
@@ -1372,28 +1374,28 @@ function startGame() {
       else playerBack.onload = res;
     }),
     new Promise((res) => {
-    if (playerRightWalk1.complete) res();
-    else playerRightWalk1.onload = res;
+      if (playerRightWalk1.complete) res();
+      else playerRightWalk1.onload = res;
     }),
     new Promise((res) => {
-    if (playerRightWalk2.complete) res();
-    else playerRightWalk2.onload = res;
+      if (playerRightWalk2.complete) res();
+      else playerRightWalk2.onload = res;
     }),
     new Promise((res) => {
-    if (playerLeftWalk1.complete) res();
-    else playerLeftWalk1.onload = res;
+      if (playerLeftWalk1.complete) res();
+      else playerLeftWalk1.onload = res;
     }),
     new Promise((res) => {
-    if (playerLeftWalk2.complete) res();
-    else playerLeftWalk2.onload = res;
+      if (playerLeftWalk2.complete) res();
+      else playerLeftWalk2.onload = res;
     }),
     new Promise((res) => {
-    if (playerRightIdle.complete) res();
-    else playerRightIdle.onload = res;
+      if (playerRightIdle.complete) res();
+      else playerRightIdle.onload = res;
     }),
     new Promise((res) => {
-    if (playerLeftIdle.complete) res();
-    else playerLeftIdle.onload = res;
+      if (playerLeftIdle.complete) res();
+      else playerLeftIdle.onload = res;
     }),
   ]).then(() => {
     gameLoop();
