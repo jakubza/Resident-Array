@@ -65,26 +65,80 @@ export function initEnemies() {
 export const lockedRooms = [
   {
     id: 1,
-    x: 18, y: 13, w: 26, h: 16,
+    name: "Center big room",
+    x: 18, y: 12, w: 26, h: 16,
     doors: [
-      { x: 16, y: 20 },
-      { x: 16, y: 19 },
       { x: 16, y: 18 },
+      { x: 16, y: 19 },
+      { x: 16, y: 20 },
+      { x: 19, y: 27 },
       { x: 20, y: 27 },
       { x: 21, y: 27 },
-      { x: 19, y: 27 },
+      { x: 27, y: 13 },
+      { x: 28, y: 13 },
+      { x: 29, y: 13 },
+      { x: 41, y: 19 },
+      { x: 41, y: 20 },
+      { x: 41, y: 21 },
+
     ],
   },
 
   {
     id: 2,
-    x: 53, y: 13, w: 15, h: 16,
+    name: "Right center room",
+    x: 55, y: 14, w: 15, h: 14,
     doors: [
-      { x: 59, y: 28 },
-      { x: 60, y: 28 },
-      { x: 61, y: 28 },
+      { x: 59, y: 27 },
+      { x: 60, y: 27 },
+      { x: 61, y: 27 },
+      { x: 59, y: 13 },
+      { x: 60, y: 13 },
+      { x: 61, y: 13 },
+      { x: 53, y: 19 },
+      { x: 53, y: 20 },
+      { x: 53, y: 21 },
     ],
   },
+
+  {
+    id: 3,
+    name: "Bottom left room",
+    x: 0, y: 40, w: 15, h: 12,
+    doors: [
+      { x: 17, y: 36 },
+      { x: 17, y: 37 },
+      { x: 17, y: 38 },
+      { x: 7, y: 47 },
+      { x: 9, y: 47 },
+    ],
+  },
+
+  {
+    id: 4,
+    name: "Bottom middle room",
+    x: 43, y: 35, w: 26, h: 14,
+    doors: [
+      { x: 52, y: 38 },
+      { x: 52, y: 39 },
+      { x: 52, y: 40 },
+      { x: 68, y: 38 },
+      { x: 68, y: 39 },
+      { x: 68, y: 40 },
+      
+    ],
+  },
+
+  {
+    id: 5,
+    name: "Bottom right room",
+    x: 79, y: 31, w: 12, h: 17,
+    doors: [
+      { x: 75, y: 38 },
+      { x: 75, y: 39 },
+      { x: 75, y: 40 },
+    ],
+  }
 ];
 
 const LOCK_DOOR_TILE = 6;
@@ -195,11 +249,10 @@ function updateEnemyAnimation(enemy) {
 export function updateEnemies() {
     if (!roomLocked || !activeRoom) return;
 
-    for (const enemy of enemies) {
-    if (!entityInRoom(enemy, activeRoom)) continue;
-    }
+    
 
     for (const enemy of enemies) {
+        if (!entityInRoom(enemy, activeRoom)) continue;
         enemy.moving = false;
 
         const dx = player.x - enemy.x;
