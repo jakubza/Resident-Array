@@ -27,6 +27,16 @@ body {
     pointer-events: none; 
 }
 
+#fadeOverlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    z-index: 10000;
+}
+
 html,
 body {
     touch-action: manipulation;
