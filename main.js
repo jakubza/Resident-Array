@@ -3,7 +3,7 @@
 // =====================================
 
 import { camera, updateCamera, drawMap, drawDecorations, drawFog, map, originalMap, gridCols, drawLights, } from "./map.js";
-import { player, spawnPlayer, updatePlayer, drawPlayer, allSprites } from "./player.js";
+import { player, spawnPlayer, updatePlayer, drawPlayer, drawSlash, allSprites } from "./player.js";
 
 import {
     enemies, initEnemies, updateEnemies, attackEnemies, collidesWithEnemy,
@@ -196,6 +196,8 @@ function gameLoop() {
     drawLights(ctx, camera, ZOOM, player);
     drawDecorations(ctx, ZOOM);
     drawPlayer(ctx, camera, ZOOM);
+    drawPlayer(ctx, camera, ZOOM);
+drawSlash(ctx, camera, ZOOM);
     drawUI(ctx);
     drawHerbPopup(ctx, herbPromptActive);
 

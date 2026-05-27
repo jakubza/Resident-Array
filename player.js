@@ -22,6 +22,9 @@ export const sprites = {
     rightIdle: load("assets/Leon RSideIdle.png"),
 };
 
+const slashImg = new Image();
+slashImg.src = "./assets/Slash.png";
+
 
 export const allSprites = Object.values(sprites);
 
@@ -81,6 +84,15 @@ export function spawnPlayer() {
 // ── UPDATE ────────────────────────────
 let attackPressed = false;
 
+let slashActive = false;
+let slashTimer = 0;
+const SLASH_DURATION = 8;
+
+export function startSlash() {
+    slashActive = true;
+    slashTimer = SLASH_DURATION;
+}
+
 export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) {
     let speed = player.speed;
 
@@ -120,9 +132,18 @@ export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) 
     if ((keys[" "] || keys["Spacebar"]) && !attackPressed && player.attackCooldown <= 0) {
         attackPressed = true;
         attackEnemiesFn();
+        startSlash();
     }
     if (!(keys[" "] || keys["Spacebar"])) attackPressed = false;
     if (player.attackCooldown > 0) player.attackCooldown--;
+
+    if (slashActive) {
+    slashTimer--;
+
+    if (slashTimer <= 0) {
+        slashActive = false;
+    }
+}
 }
 
 // ── KRESLENIE ─────────────────────────
@@ -136,5 +157,45 @@ export function drawPlayer(ctx, camera, ZOOM) {
     ctx.translate(screenX + drawW / 2, screenY + drawH / 2);
     if (player.hp <= 0) ctx.rotate(Math.PI / 2);
     ctx.drawImage(getCurrentSprite(), -drawW / 2, -drawH / 2, drawW, drawH);
+    ctx.restore();
+}
+
+export function drawSlash(ctx, camera, ZOOM) {
+    if (!slashActive) return;
+
+    const size = 24 * ZOOM;
+
+    let offsetX = 0;
+    let offsetY = 0;
+    let rotation = 0;
+
+    if (currentDirection === "front") {
+        offsetY = 18 * ZOOM;
+        rotation = 0;
+    }
+
+    if (currentDirection === "back") {
+        offsetY = -14 * ZOOM;
+        rotation = Math.PI;
+    }
+
+    if (currentDirection === "right") {
+        offsetX = 18 * ZOOM;
+        rotation = -Math.PI / 2;
+    }
+
+    if (currentDirection === "left") {
+        offsetX = -18 * ZOOM;
+        rotation = Math.PI / 2;
+    }
+
+    const x = Math.round((player.x - camera.x + player.width / 2) * ZOOM);
+    const y = Math.round((player.y - camera.y + player.height / 2) * ZOOM);
+
+    ctx.save();
+    ctx.translate(x + offsetX, y + offsetY);
+    ctx.rotate(rotation);
+    ctx.globalAlpha = slashTimer / SLASH_DURATION;
+    ctx.drawImage(slashImg, -size / 2, -size / 2, size, size);
     ctx.restore();
 }
