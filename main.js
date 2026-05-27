@@ -7,7 +7,7 @@ import { player, spawnPlayer, updatePlayer, drawPlayer, allSprites } from "./pla
 // OPRAVA: Pridali sme drawEnemies priamo do hlavného importu hore
 import {
     enemies, initEnemies, updateEnemies, attackEnemies, collidesWithEnemy,
-    updateRoomLock, openRoomDoors, resetRoomLock, drawEnemies
+    updateRoomLock, openRoomDoors, resetRoomLock, drawEnemies, clearDeadEnemies,
 } from "./enemies.js";
 import {
     coins, ptas, resetPtas, initCoins, checkCoinCollision, drawCoins,
@@ -18,6 +18,8 @@ import {
 } from "./items.js";
 import { drawUI, drawHerbPopup } from "./ui.js";
 import { allEnemySprites } from "./enemies.js";
+import { drawDeadEnemies } from "./enemies.js";
+
 
 // ── CANVAS ────────────────────────────
 const canvas = document.getElementById("game");
@@ -146,6 +148,7 @@ function restartGame() {
 
     initCoins();
     initHeals();
+    clearDeadEnemies();
     initEnemies();
     placeClosedExitDoor();
     spawnPlayer();
@@ -187,6 +190,7 @@ function gameLoop() {
 
     // OPRAVA: Odstránený pomalý dynamic import, teraz voláme funkciu priamo a rýchlo
     drawEnemies(ctx, camera, ZOOM);
+    drawDeadEnemies(ctx, camera, ZOOM);
     drawFog(ctx, ZOOM, player);
     drawDecorations(ctx, ZOOM);
     drawPlayer(ctx, camera, ZOOM);
