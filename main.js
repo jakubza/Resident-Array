@@ -4,7 +4,7 @@
 
 import { camera, updateCamera, drawMap, drawDecorations, drawFog, map, originalMap, gridCols } from "./map.js";
 import { player, spawnPlayer, updatePlayer, drawPlayer, allSprites } from "./player.js";
-// OPRAVA: Pridali sme drawEnemies priamo do hlavného importu hore
+
 import {
     enemies, initEnemies, updateEnemies, attackEnemies, collidesWithEnemy,
     updateRoomLock, openRoomDoors, resetRoomLock, drawEnemies, clearDeadEnemies,
@@ -56,6 +56,7 @@ const startBtn = document.getElementById("start");
 const controlsBtn = document.getElementById("controls");
 const closeBtn = document.getElementById("closeControls");
 const overlay = document.getElementById("controlsOverlay");
+const fadeOverlay = document.getElementById("fadeOverlay");
 const deathScreen = document.getElementById("deathScreen");
 const restartBtn = document.getElementById("restartBtn");
 const winScreen = document.getElementById("winScreen");
@@ -74,7 +75,7 @@ const keys = {};
 window.addEventListener("keydown", (e) => {
     keys[e.key] = true;
 
-    // Bylinka popup
+    
     if (herbPromptActive) {
         if (e.key === "Enter" && currentHerb && !currentHerb.collected) {
             currentHerb.collected = true;
@@ -82,7 +83,7 @@ window.addEventListener("keydown", (e) => {
             setHerbState(false, null, null);
         }
         if (e.key === "Escape") {
-            setHerbState(false, null, currentHerb); // herbIgnore = currentHerb
+            setHerbState(false, null, currentHerb); 
         }
     }
 });
@@ -188,7 +189,7 @@ function gameLoop() {
     drawCoins(ctx, ZOOM);
     drawHeals(ctx, ZOOM);
 
-    // OPRAVA: Odstránený pomalý dynamic import, teraz voláme funkciu priamo a rýchlo
+    
     drawEnemies(ctx, camera, ZOOM);
     drawDeadEnemies(ctx, camera, ZOOM);
     drawFog(ctx, ZOOM, player);
@@ -205,8 +206,32 @@ function startGame() {
     if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
     clearKeys();
 
-    if (menu) menu.style.display = "none";
-    canvas.style.display = "block";
+    if (fadeOverlay) {
+        fadeOverlay.style.display = "block";
+        fadeOverlay.style.opacity = "0";
+       
+        requestAnimationFrame(() => {
+            fadeOverlay.style.opacity = "1";
+        });
+    }
+
+    setTimeout(() => {
+        if (menu) menu.style.display = "none";
+        if (canvas) {
+            canvas.style.display = "block";
+            canvas.style.opacity = "0";
+            canvas.style.transition = "opacity 0.6s ease";
+        }
+
+        if (fadeOverlay) {
+            fadeOverlay.style.opacity = "0";
+        }
+        if (canvas) canvas.style.opacity = "1";
+    }, 450);
+
+    setTimeout(() => {
+        if (fadeOverlay) fadeOverlay.style.display = "none";
+    }, 1050);
 
     resetPtas();
     player.hp = player.maxHp;
