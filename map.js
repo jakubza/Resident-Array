@@ -299,3 +299,29 @@ export function drawDecorations(ctx, ZOOM) {
         }
     }
 }
+
+export function drawFog(ctx, ZOOM, player) {
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    const playerCenterX = (player.x - camera.x + player.width / 2) * ZOOM;
+    const playerCenterY = (player.y - camera.y + player.height / 2) * ZOOM;
+    const innerRadius = 160;
+    const outerRadius = 340;
+
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.68)";
+    ctx.fillRect(0, 0, screenW, screenH);
+
+    const gradient = ctx.createRadialGradient(
+        playerCenterX, playerCenterY, innerRadius,
+        playerCenterX, playerCenterY, outerRadius
+    );
+    gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+    gradient.addColorStop(0.25, "rgba(0, 0, 0, 0.06)");
+    gradient.addColorStop(0.55, "rgba(0, 0, 0, 0.26)");
+    gradient.addColorStop(1, "rgba(0, 0, 0, 0.68)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, screenW, screenH);
+    ctx.restore();
+}

@@ -2,7 +2,7 @@
 // MAIN.JS – game loop, štart, restart, input, death/win
 // =====================================
 
-import { camera, updateCamera, drawMap, drawDecorations, map, originalMap, gridCols } from "./map.js";
+import { camera, updateCamera, drawMap, drawDecorations, drawFog, map, originalMap, gridCols } from "./map.js";
 import { player, spawnPlayer, updatePlayer, drawPlayer, allSprites } from "./player.js";
 // OPRAVA: Pridali sme drawEnemies priamo do hlavného importu hore
 import {
@@ -33,7 +33,7 @@ document.addEventListener("keydown", (e) => {
 // ── ZOOM ──────────────────────────────
 let ZOOM = 5;
 function updateZoom() {
-    ZOOM = window.innerWidth < 900 ? 3 : window.innerWidth < 1400 ? 4 : 1;
+    ZOOM = window.innerWidth < 900 ? 3 : window.innerWidth < 1400 ? 4 : 5;
 }
 
 function resizeCanvas() {
@@ -187,7 +187,7 @@ function gameLoop() {
 
     // OPRAVA: Odstránený pomalý dynamic import, teraz voláme funkciu priamo a rýchlo
     drawEnemies(ctx, camera, ZOOM);
-
+    drawFog(ctx, ZOOM, player);
     drawDecorations(ctx, ZOOM);
     drawPlayer(ctx, camera, ZOOM);
     drawUI(ctx);
