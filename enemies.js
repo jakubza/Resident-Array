@@ -62,13 +62,30 @@ export function initEnemies() {
 }
 
 // ── LOCKED ROOM ───────────────────────
-export const lockedRoom = {
-    x: 16, y: 13, w: 26, h: 16,
+export const lockedRooms = [
+  {
+    id: 1,
+    x: 18, y: 13, w: 26, h: 16,
     doors: [
-        { x: 16, y: 20 }, { x: 16, y: 19 }, { x: 16, y: 18 },
-        { x: 20, y: 27 }, { x: 21, y: 27 }, { x: 19, y: 27 },
+      { x: 16, y: 20 },
+      { x: 16, y: 19 },
+      { x: 16, y: 18 },
+      { x: 20, y: 27 },
+      { x: 21, y: 27 },
+      { x: 19, y: 27 },
     ],
-};
+  },
+
+  {
+    id: 2,
+    x: 53, y: 13, w: 15, h: 16,
+    doors: [
+      { x: 59, y: 28 },
+      { x: 60, y: 28 },
+      { x: 61, y: 28 },
+    ],
+  },
+];
 
 const LOCK_DOOR_TILE = 6;
 let roomLocked = false;
@@ -95,16 +112,26 @@ export function enemiesInLockedRoomAlive() {
     return enemies.some(enemyInLockedRoom);
 }
 
-function closeRoomDoors() {
-    if (doorsClosed) return;
-    for (const door of lockedRoom.doors) map[door.y * gridCols + door.x] = LOCK_DOOR_TILE;
-    doorsClosed = true;
+function closeRoomDoors(room) {
+  if (doorsClosed) return;
+
+  for (const door of room.doors) {
+    map[door.y * gridCols + door.x] = LOCK_DOOR_TILE;
+  }
+
+  doorsClosed = true;
 }
 
-export function openRoomDoors() {
-    for (const door of lockedRoom.doors) map[door.y * gridCols + door.x] = 1;
-    doorsClosed = false;
+export function openRoomDoors(room = activeRoom) {
+  if (!room) return;
+
+  for (const door of room.doors) {
+    map[door.y * gridCols + door.x] = 1;
+  }
+
+  doorsClosed = false;
 }
+
 
 export function resetRoomLock() {
     roomLocked = false;
@@ -112,14 +139,21 @@ export function resetRoomLock() {
 }
 
 export function updateRoomLock() {
-    if (!roomLocked && isPlayerInLockedRoom() && enemiesInLockedRoomAlive()) {
-        roomLocked = true;
-        closeRoomDoors();
+  if (!roomLocked) {
+    const room = getPlayerRoom();
+
+    if (room && enemiesInRoomAlive(room)) {
+      activeRoom = room;
+      roomLocked = true;
+      closeRoomDoors(activeRoom);
     }
-    if (roomLocked && !enemiesInLockedRoomAlive()) {
-        roomLocked = false;
-        openRoomDoors();
-    }
+  }
+
+  if (roomLocked && activeRoom && !enemiesInRoomAlive(activeRoom)) {
+    roomLocked = false;
+    openRoomDoors(activeRoom);
+    activeRoom = null;
+  }
 }
 
 function updateEnemyAnimation(enemy) {
@@ -159,7 +193,11 @@ function updateEnemyAnimation(enemy) {
 
 // ── AI & KOLÍZIA ─────────────────────
 export function updateEnemies() {
-    if (!roomLocked) return;
+    if (!roomLocked || !activeRoom) return;
+
+    for (const enemy of enemies) {
+    if (!entityInRoom(enemy, activeRoom)) continue;
+    }
 
     for (const enemy of enemies) {
         enemy.moving = false;
@@ -196,7 +234,7 @@ export function updateEnemies() {
     for (let i = 0; i < enemies.length; i++) {
         for (let j = i + 1; j < enemies.length; j++) {
             const a = enemies[i]; const b = enemies[j];
-            if (!enemyInLockedRoom(a) || !enemyInLockedRoom(b)) continue;
+            if (!entityInRoom(a, activeRoom) || !entityInRoom(b, activeRoom)) continue;
             const dx = b.x - a.x; const dy = b.y - a.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             const minDist = 18;
@@ -242,4 +280,26 @@ export function drawEnemies(ctx, camera, ZOOM) {
             enemy.height * ZOOM
         );
     }
+}
+
+let activeRoom = null;
+
+function entityInRoom(entity, room) {
+  const col = Math.floor((entity.x + entity.width / 2) / TILE_SIZE);
+  const row = Math.floor((entity.y + entity.height / 2) / TILE_SIZE);
+
+  return (
+    col >= room.x &&
+    col <= room.x + room.w &&
+    row >= room.y &&
+    row <= room.y + room.h
+  );
+}
+
+function getPlayerRoom() {
+  return lockedRooms.find(room => entityInRoom(player, room)) || null;
+}
+
+function enemiesInRoomAlive(room) {
+  return enemies.some(enemy => entityInRoom(enemy, room));
 }
