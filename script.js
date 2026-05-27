@@ -206,6 +206,42 @@ playerLeftIdle.src = "assets/Leon LSideIdle.png";
 const playerRightIdle = new Image();
 playerRightIdle.src = "assets/Leon RSideIdle.png";
 
+const enemyFrontIdle = new Image();
+enemyFrontIdle.src = "assets/Villager F idle.png";
+
+const enemyFrontWalk1 = new Image();
+enemyFrontWalk1.src = "assets/Villager FW1.png";
+
+const enemyFrontWalk2 = new Image();
+enemyFrontWalk2.src = "assets/Villager FW2.png";
+
+const enemyBackIdle = new Image();
+enemyBackIdle.src = "assets/Villager B idle.png";
+
+const enemyBackWalk1 = new Image();
+enemyBackWalk1.src = "assets/Villager BW1.png";
+
+const enemyBackWalk2 = new Image();
+enemyBackWalk2.src = "assets/Villager BW2.png";
+
+const enemyRightIdle = new Image();
+enemyRightIdle.src = "assets/Villager RS idle.png";
+
+const enemyRightWalk1 = new Image();
+enemyRightWalk1.src = "assets/Villager RSW1.png";
+
+const enemyRightWalk2 = new Image();
+enemyRightWalk2.src = "assets/Villager RSW2.png";
+
+const enemyLeftIdle = new Image();
+enemyLeftIdle.src = "assets/Villager LS idle.png";
+
+const enemyLeftWalk1 = new Image();
+enemyLeftWalk1.src = "assets/Villager LSW1.png";
+
+const enemyLeftWalk2 = new Image();
+enemyLeftWalk2.src = "assets/Villager LSW2.png";
+
 let currentDirection = "front";
 
 
@@ -460,6 +496,8 @@ function initHeals() {
         heals.push({
           x: col * TILE_SIZE,
           y: row * TILE_SIZE,
+          width: 24,
+          height: 24,
           collected: false
         });
       }
@@ -537,10 +575,16 @@ function initEnemies() {
         enemies.push({
           x: col * TILE_SIZE,
           y: row * TILE_SIZE,
-          width: 16,
-          height: 16,
+          width: 24,
+          height: 24,
           speed: 0.4,
-          hp: 100
+          hp: 100,
+
+          direction: "front",
+          moving: false,
+          walkFrame: 0,
+          walkTimer: 0,
+          currentSprite: enemyFrontIdle
         });
       }
     }
@@ -563,12 +607,69 @@ function updateEnemies() {
       const nextX = enemy.x + (dx / dist) * enemy.speed;
       const nextY = enemy.y + (dy / dist) * enemy.speed;
 
+      enemy.moving = false;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        enemy.direction = dx > 0 ? "right" : "left";
+      } else {
+        enemy.direction = dy > 0 ? "front" : "back";
+      }
+
       if (isWalkable(nextX, enemy.y, enemy.width, enemy.height)) {
         enemy.x = nextX;
+        enemy.moving = true;
       }
 
       if (isWalkable(enemy.x, nextY, enemy.width, enemy.height)) {
         enemy.y = nextY;
+        enemy.moving = true;
+      }
+
+      updateEnemyAnimation(enemy);
+    }
+  }
+
+  function updateEnemyAnimation(enemy) {
+    if (enemy.moving) {
+      enemy.walkTimer++;
+
+      if (enemy.walkTimer >= 25) {
+        enemy.walkTimer = 0;
+        enemy.walkFrame++;
+
+        if (enemy.walkFrame > 1) {
+          enemy.walkFrame = 0;
+        }
+      }
+
+      if (enemy.direction === "front") {
+        enemy.currentSprite = enemy.walkFrame === 0 ? enemyFrontWalk1 : enemyFrontWalk2;
+
+      } else if (enemy.direction === "back") {
+        enemy.currentSprite = enemy.walkFrame === 0 ? enemyBackWalk1 : enemyBackWalk2;
+
+      } else if (enemy.direction === "right") {
+        enemy.currentSprite = enemy.walkFrame === 0 ? enemyRightWalk1 : enemyRightWalk2;
+
+      } else if (enemy.direction === "left") {
+        enemy.currentSprite = enemy.walkFrame === 0 ? enemyLeftWalk1 : enemyLeftWalk2;
+      }
+
+    } else {
+      enemy.walkTimer = 0;
+      enemy.walkFrame = 0;
+
+      if (enemy.direction === "front") {
+        enemy.currentSprite = enemyFrontIdle;
+
+      } else if (enemy.direction === "back") {
+        enemy.currentSprite = enemyBackIdle;
+
+      } else if (enemy.direction === "right") {
+        enemy.currentSprite = enemyRightIdle;
+
+      } else if (enemy.direction === "left") {
+        enemy.currentSprite = enemyLeftIdle;
       }
     }
   }
@@ -680,7 +781,7 @@ function drawDecorations() {
 function drawEnemies() {
   for (const enemy of enemies) {
     ctx.drawImage(
-      enemyImg,
+      enemy.currentSprite,
       Math.round((enemy.x - camera.x) * ZOOM),
       Math.round((enemy.y - camera.y) * ZOOM),
       enemy.width * ZOOM,
@@ -845,7 +946,7 @@ function drawMap() {
       const tile = map[row * gridCols + col];
       if (tile === 0) continue;
       if (
-        tile === EXIT_DOOR_CLOSED_1 || tile === EXIT_DOOR_CLOSED_2 || tile === EXIT_DOOR_OPEN_1 || tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_1|| tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_3 || tile === EXIT_DOOR_OPEN_4
+        tile === EXIT_DOOR_CLOSED_1 || tile === EXIT_DOOR_CLOSED_2 || tile === EXIT_DOOR_OPEN_1 || tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_1 || tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_3 || tile === EXIT_DOOR_OPEN_4
       ) {
 
 
