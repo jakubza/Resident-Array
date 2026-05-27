@@ -17,6 +17,7 @@ import {
     setHerbState, HEAL_AMOUNT,
 } from "./items.js";
 import { drawUI, drawHerbPopup } from "./ui.js";
+import { allEnemySprites } from "./enemies.js";
 
 // ── CANVAS ────────────────────────────
 const canvas = document.getElementById("game");
@@ -32,7 +33,7 @@ document.addEventListener("keydown", (e) => {
 // ── ZOOM ──────────────────────────────
 let ZOOM = 5;
 function updateZoom() {
-    ZOOM = window.innerWidth < 900 ? 3 : window.innerWidth < 1400 ? 4 : 5;
+    ZOOM = window.innerWidth < 900 ? 3 : window.innerWidth < 1400 ? 4 : 1;
 }
 
 function resizeCanvas() {
@@ -216,7 +217,12 @@ function startGame() {
     gameRunning = true;
 
     Promise.all(
-        allSprites.map(img => new Promise(res => { if (img.complete) res(); else img.onload = res; }))
+        [...allSprites, ...allEnemySprites].map(img =>
+            new Promise(res => {
+                if (img.complete) res();
+                else img.onload = res;
+            })
+        )
     ).then(() => gameLoop());
 }
 
