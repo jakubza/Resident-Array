@@ -22,7 +22,7 @@ export const sprites = {
     rightIdle: load("assets/Leon RSideIdle.png"),
 };
 
-// Pole všetkých obrázkov pre Promise.all pri štarte
+
 export const allSprites = Object.values(sprites);
 
 // ── PLAYER OBJEKT ─────────────────────
@@ -97,9 +97,9 @@ export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) 
     if (keys["a"] || keys["ArrowLeft"]) { nextX -= speed; currentDirection = "left"; }
     if (keys["d"] || keys["ArrowRight"]) { nextX += speed; currentDirection = "right"; }
 
-    // Debug HP (môžeš zmazať)
-    if (keys["-"]) player.hp -= 1;
-    if (keys["+"]) player.hp = Math.min(player.maxHp, player.hp + 1);
+    // Debug HP 
+    //if (keys["-"]) player.hp -= 1;
+    //if (keys["+"]) player.hp = Math.min(player.maxHp, player.hp + 1);
 
     if (isWalkable(nextX, player.y, player.width, player.height)) player.x = nextX;
     if (isWalkable(player.x, nextY, player.width, player.height)) player.y = nextY;
