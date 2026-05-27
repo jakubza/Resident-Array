@@ -8,22 +8,23 @@ body {
     display: flex;
 }
 
-html, body {
+html,
+body {
     touch-action: manipulation;
     overflow: hidden;
 }
 
 canvas {
-  display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  background: black;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: black;
 }
 
 #game {
-  display: none;
-  background: black;
-  image-rendering: pixelated;
+    display: none;
+    background: black;
+    image-rendering: pixelated;
 }
 
 #menu {
@@ -140,19 +141,53 @@ canvas {
     opacity: 0;
     transform: scale(0.9);
 }
-#restartBtn{
+
+#restartBtn {
     display: none;
-        background: transparent;
-        color: #aaaaaa;
-        border: 1px solid #444;
-        padding: 10px 40px;
-        font-family: serif;
-        font-size: 18px;
-        cursor: pointer;
-        letter-spacing: 2px;
-        transition: color 0.3s;
+    background: transparent;
+    color: #aaaaaa;
+    border: 1px solid #444;
+    padding: 10px 40px;
+    font-family: serif;
+    font-size: 18px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: color 0.3s;
 }
 
+#winScreen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    color: #f2cc0d;
+    font-family: serif;
+    transition: opacity 2s
+}
+
+#winText {
+    font-size: 5rem;
+    opacity: 0;
+    transform: scale(0.8);
+    margin-bottom: 20px
+}
+
+#winRestartBtn {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: #f2cc0d;
+    border: none;
+    font-weight: bold;
+    display: none
+}
 
 
 @media (max-width: 1400px) {

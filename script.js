@@ -48,13 +48,21 @@ const TILE_SIZE = 16; // velkost jedneho tile
 var ZOOM = 5;
 
 // Kolko coinov treba na vyhru
-const COIN_GOAL = 1500;
+const COIN_GOAL = 1000;
 
 // Specialne ID tileov
 const ENEMY_TILE = 99; // enemy spawn
 const HEAL_TILE = 98; // heal item
 const TORCH_TILE = 97; // torch item
+const EXIT_DOOR_CLOSED_1 = 80
+const EXIT_DOOR_CLOSED_2 = 81
+const EXIT_DOOR_CLOSED_3 = 82
+const EXIT_DOOR_CLOSED_4 = 83
 
+const EXIT_DOOR_OPEN_1 = 84
+const EXIT_DOOR_OPEN_2 = 85
+const EXIT_DOOR_OPEN_3 = 86
+const EXIT_DOOR_OPEN_4 = 87
 // Kolko HP heal item prida
 const HEAL_AMOUNT = 50;
 
@@ -240,8 +248,18 @@ const atlas = {
   blue_fountain2: { x: 208, y: 80, w: 16, h: 16 },
   blue_fountainsplash: { x: 192, y: 96, w: 16, h: 16 },
   blue_fountainsplash2: { x: 208, y: 96, w: 16, h: 16 },
- 
-  
+
+  exit1_closed: { x: 367, y: 16, w: 16, h: 16 },
+  exit2_closed: { x: 384, y: 16, w: 16, h: 16 },
+  exit3_closed: { x: 367, y: 32, w: 16, h: 16 },
+  exit4_closed: { x: 384, y: 32, w: 16, h: 16 },
+
+  exit1_open: { x: 432, y: 16, w: 16, h: 16 },
+  exit2_open: { x: 448, y: 16, w: 16, h: 16 },
+  exit3_open: { x: 432, y: 32, w: 16, h: 16 },
+  exit4_open: { x: 448, y: 32, w: 16, h: 16 },
+
+
 
 
 };
@@ -316,6 +334,14 @@ function getAtlasForTile(tile) {
   if (tile === 29) return atlas.blue_fountain2;
   if (tile === 30) return atlas.blue_fountainsplash;
   if (tile === 31) return atlas.blue_fountainsplash2;
+  if (tile === EXIT_DOOR_CLOSED_1) return atlas.exit1_closed;
+  if (tile === EXIT_DOOR_CLOSED_2) return atlas.exit2_closed;
+  if (tile === EXIT_DOOR_CLOSED_3) return atlas.exit3_closed;
+  if (tile === EXIT_DOOR_CLOSED_4) return atlas.exit4_closed;
+  if (tile === EXIT_DOOR_OPEN_1) return atlas.exit1_open;
+  if (tile === EXIT_DOOR_OPEN_2) return atlas.exit2_open;
+  if (tile === EXIT_DOOR_OPEN_3) return atlas.exit3_open;
+  if (tile === EXIT_DOOR_OPEN_4) return atlas.exit4_open;
   if (tile === ENEMY_TILE) return atlas.floor_plain;
   if (tile === HEAL_TILE) return atlas.floor_plain;
   if (tile === TORCH_TILE) return atlas.floor_plain;
@@ -396,7 +422,7 @@ function checkCoinCollision() {
       ptas += 500;
 
       if (ptas >= COIN_GOAL) {
-        handleWin();
+        openExitDoor();
       }
     }
   }
@@ -683,7 +709,11 @@ const lockedRoom = {
     { x: 19, y: 27 },
   ]
 };
-
+const exitDoor = {
+  x: 60,
+  y: 45,
+  opened: false
+};
 function isPlayerInLockedRoom() {
   const playerCol = Math.floor((player.x + player.width / 2) / TILE_SIZE);
   const playerRow = Math.floor((player.y + player.height / 2) / TILE_SIZE);
@@ -814,7 +844,26 @@ function drawMap() {
     for (let col = 0; col < gridCols; col++) {
       const tile = map[row * gridCols + col];
       if (tile === 0) continue;
+      if (
+        tile === EXIT_DOOR_CLOSED_1 || tile === EXIT_DOOR_CLOSED_2 || tile === EXIT_DOOR_OPEN_1 || tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_1|| tile === EXIT_DOOR_OPEN_2 || tile === EXIT_DOOR_OPEN_3 || tile === EXIT_DOOR_OPEN_4
+      ) {
 
+
+        const floor = atlas.floor_plain;
+
+        drawAtlasTile(
+          floor.x,
+          floor.y,
+          floor.w,
+          floor.h,
+
+          Math.round((col * TILE_SIZE - camX) * ZOOM),
+          Math.round((row * TILE_SIZE - camY) * ZOOM),
+
+          TILE_SIZE * ZOOM + 1,
+          TILE_SIZE * ZOOM + 1
+        );
+      }
       const atlasTile = getAtlasForTile(tile);
       if (!atlasTile) continue;
 
@@ -949,7 +998,7 @@ function drawHerbPopup() {
   ctx.fillStyle = "#d8c38f";
   ctx.font = "bold 28px serif";
   ctx.textAlign = "center";
-  ctx.fillText("You found a Gherb.", x + boxWidth / 2, y + 50);
+  ctx.fillText("You found a Green herb.", x + boxWidth / 2, y + 50);
 
   // controls
   ctx.font = "20px serif";
@@ -1144,6 +1193,7 @@ function restartGame() {
   initCoins();
   initHeals();
   initEnemies();
+  placeClosedExitDoor();
 
 
   gameRunning = true;
@@ -1172,7 +1222,25 @@ function collidesWithEnemy(x, y, width, height) {
 
   return false;
 }
+function checkExitDoorCollision() {
 
+  if (!exitDoor.opened) return;
+
+  const doorX = exitDoor.x * TILE_SIZE;
+  const doorY = exitDoor.y * TILE_SIZE;
+
+  const doorWidth = TILE_SIZE * 2;
+  const doorHeight = TILE_SIZE * 2;
+
+  if (
+    player.x < doorX + doorWidth &&
+    player.x + player.width > doorX &&
+    player.y < doorY + doorHeight &&
+    player.y + player.height > doorY
+  ) {
+    handleWin();
+  }
+}
 // ==========================
 // UPDATE
 // ==========================
@@ -1302,6 +1370,7 @@ function update() {
   checkHealCollision();
   updateRoomLock();
   updateEnemies();
+  checkExitDoorCollision();
 
 
   if (player.hp <= 0) {
@@ -1359,6 +1428,39 @@ function clearKeys() {
     keys[key] = false;
   }
 }
+function placeClosedExitDoor() {
+
+  const x = exitDoor.x;
+  const y = exitDoor.y;
+
+  // horný riadok
+  map[y * gridCols + x] = EXIT_DOOR_CLOSED_1;
+  map[y * gridCols + (x + 1)] = EXIT_DOOR_CLOSED_2;
+
+  // spodný riadok
+  map[(y + 1) * gridCols + x] = EXIT_DOOR_CLOSED_3;
+  map[(y + 1) * gridCols + (x + 1)] = EXIT_DOOR_CLOSED_4;
+
+  exitDoor.opened = false;
+  console.log("EXIT DOOR SPAWNED");
+}
+function openExitDoor() {
+
+  if (exitDoor.opened) return;
+
+  const x = exitDoor.x;
+  const y = exitDoor.y;
+
+  // horný riadok
+  map[y * gridCols + x] = EXIT_DOOR_OPEN_1;
+  map[y * gridCols + (x + 1)] = EXIT_DOOR_OPEN_2;
+
+  // spodný riadok
+  map[(y + 1) * gridCols + x] = EXIT_DOOR_OPEN_3;
+  map[(y + 1) * gridCols + (x + 1)] = EXIT_DOOR_OPEN_4;
+
+  exitDoor.opened = true;
+}
 
 function startGame() {
   if (animationId) {
@@ -1377,7 +1479,7 @@ function startGame() {
   initCoins();
   initHeals();
   initEnemies();
-
+  placeClosedExitDoor();
 
 
   player.hp = player.maxHp;
