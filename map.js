@@ -1,7 +1,7 @@
 // =====================================
 // MAP.JS – mapa, atlas, kreslenie, kamera, kolízia
 // =====================================
-
+import { heals } from "./items.js";
 export const TILE_SIZE = 16;
 
 // Špeciálne ID tileov
@@ -160,36 +160,36 @@ export const atlas = {
 
 export function getAtlasForTile(tile) {
     const t = {
-        1: atlas.floor_plain, 
-        2: atlas.corridor, 
+        1: atlas.floor_plain,
+        2: atlas.corridor,
         3: atlas.floor_plain,
-        4: atlas.entrance, 
-        5: atlas.wall_windows, 
+        4: atlas.entrance,
+        5: atlas.wall_windows,
         6: atlas.wall_center,
-        7: atlas.wall_right, 
-        8: atlas.wall_top_center, 
+        7: atlas.wall_right,
+        8: atlas.wall_top_center,
         9: atlas.wall_front,
-        10: atlas.wall_outer_n, 
-        11: atlas.wall_outer_ne, 
+        10: atlas.wall_outer_n,
+        11: atlas.wall_outer_ne,
         12: atlas.wall_outer_nw,
-        13: atlas.wall_outer_e, 
-        14: atlas.entrance_door1, 
+        13: atlas.wall_outer_e,
+        14: atlas.entrance_door1,
         15: atlas.entrance_door2,
-        16: atlas.entrance_door3, 
-        17: atlas.entrance_door4, 
+        16: atlas.entrance_door3,
+        17: atlas.entrance_door4,
         18: atlas.pipe_lower,
-        19: atlas.lower_pillar, 
-        20: atlas.upper_pillar, 
+        19: atlas.lower_pillar,
+        20: atlas.upper_pillar,
         21: atlas.floor_pillar,
-        22: atlas.floor_stain1, 
-        23: atlas.floor_stain2, 
+        22: atlas.floor_stain1,
+        23: atlas.floor_stain2,
         24: atlas.floor_stain3,
-        25: atlas.floor_stain4, 
-        26: atlas.floor_stain5, 
+        25: atlas.floor_stain4,
+        26: atlas.floor_stain5,
         27: atlas.floor_stain6,
-        28: atlas.blue_fountain1, 
+        28: atlas.blue_fountain1,
         29: atlas.blue_fountain2,
-        30: atlas.blue_fountainsplash, 
+        30: atlas.blue_fountainsplash,
         31: atlas.blue_fountainsplash2,
         [EXIT_DOOR_CLOSED_1]: atlas.exit1_closed,
         [EXIT_DOOR_CLOSED_2]: atlas.exit2_closed,
@@ -265,7 +265,7 @@ export function drawMap(ctx, ZOOM) {
             const tile = map[row * gridCols + col];
             if (tile === 0) continue;
 
-            
+
             if ([EXIT_DOOR_CLOSED_1, EXIT_DOOR_CLOSED_2,
                 EXIT_DOOR_OPEN_1, EXIT_DOOR_OPEN_2,
                 EXIT_DOOR_OPEN_3, EXIT_DOOR_OPEN_4].includes(tile)) {
@@ -300,28 +300,75 @@ export function drawDecorations(ctx, ZOOM) {
     }
 }
 
-export function drawFog(ctx, ZOOM, player) {
-    const screenW = window.innerWidth;
-    const screenH = window.innerHeight;
-    const playerCenterX = (player.x - camera.x + player.width / 2) * ZOOM;
-    const playerCenterY = (player.y - camera.y + player.height / 2) * ZOOM;
-    const innerRadius = 160;
-    const outerRadius = 340;
-
+export function drawFog(ctx) {
     ctx.save();
-    ctx.fillStyle = "rgba(0, 0, 0, 0.68)";
-    ctx.fillRect(0, 0, screenW, screenH);
 
-    const gradient = ctx.createRadialGradient(
-        playerCenterX, playerCenterY, innerRadius,
-        playerCenterX, playerCenterY, outerRadius
-    );
-    gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-    gradient.addColorStop(0.25, "rgba(0, 0, 0, 0.06)");
-    gradient.addColorStop(0.55, "rgba(0, 0, 0, 0.26)");
-    gradient.addColorStop(1, "rgba(0, 0, 0, 0.68)");
+    // iba jemná hmla, nie úplná tma
+    ctx.fillStyle = "rgba(40,40,40,0.12)";
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, screenW, screenH);
     ctx.restore();
 }
+
+export function drawLights(ctx, camera, ZOOM, player) {
+    ctx.save();
+
+    // celková tma
+    ctx.fillStyle = "rgba(0,0,0,0.72)";
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+    ctx.globalCompositeOperation = "lighter";
+
+    // TORCHE - menšie, jemné
+    for (let row = 0; row < mapRows.length; row++) {
+        for (let col = 0; col < gridCols; col++) {
+            if (mapRows[row][col] === TORCH_TILE) {
+                const x = Math.round((col * TILE_SIZE - camera.x + TILE_SIZE / 2) * ZOOM);
+                const y = Math.round((row * TILE_SIZE - camera.y + TILE_SIZE / 2) * ZOOM);
+
+                drawGlow(ctx, x, y, 140, "255,170,90", 0.38);
+            }
+        }
+    }
+
+for (const herb of heals) {
+    if (herb.collected) continue;
+
+    const x = Math.round((herb.x - camera.x + TILE_SIZE / 2) * ZOOM);
+    const y = Math.round((herb.y - camera.y + TILE_SIZE / 2) * ZOOM);
+
+    drawGlow(ctx, x, y, 75, "120,255,120", 0.36);
+}
+
+    // LEON - väčší prirodzený kužeľ/kruh
+    const px = Math.round((player.x - camera.x + player.width / 2) * ZOOM);
+    const py = Math.round((player.y - camera.y + player.height / 2) * ZOOM);
+
+    drawGlow(ctx, px, py, 500, "255,245,220", 0.25);
+
+
+    ctx.restore();
+}
+
+function drawGlow(ctx, x, y, radius, color, strength) {
+
+    const gradient = ctx.createRadialGradient(
+        x, y, 0,
+        x, y, radius
+    );
+
+    // skoro rovnaká intenzita
+    gradient.addColorStop(0, `rgba(${color},${strength})`);
+gradient.addColorStop(0.4, `rgba(${color},${strength * 0.35})`);
+gradient.addColorStop(0.75, `rgba(${color},${strength * 0.08})`);
+gradient.addColorStop(1, `rgba(${color},0)`);
+
+    ctx.fillStyle = gradient;
+
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+
+

@@ -2,7 +2,7 @@
 // MAIN.JS – game loop, štart, restart, input, death/win
 // =====================================
 
-import { camera, updateCamera, drawMap, drawDecorations, drawFog, map, originalMap, gridCols } from "./map.js";
+import { camera, updateCamera, drawMap, drawDecorations, drawFog, map, originalMap, gridCols, drawLights, } from "./map.js";
 import { player, spawnPlayer, updatePlayer, drawPlayer, allSprites } from "./player.js";
 
 import {
@@ -192,7 +192,8 @@ function gameLoop() {
     
     drawEnemies(ctx, camera, ZOOM);
     drawDeadEnemies(ctx, camera, ZOOM);
-    drawFog(ctx, ZOOM, player);
+    drawFog(ctx);
+    drawLights(ctx, camera, ZOOM, player);
     drawDecorations(ctx, ZOOM);
     drawPlayer(ctx, camera, ZOOM);
     drawUI(ctx);
