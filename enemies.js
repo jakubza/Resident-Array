@@ -11,6 +11,9 @@ const load = (src) => {
     return img;
 };
 
+const enemyDead = new Image();
+enemyDead.src = "assets/Villager Dead.png";
+
 export const enemySprites = {
     frontIdle: load("assets/Villager F idle.png"),
     frontWalk1: load("assets/Villager FW1.png"),
@@ -27,11 +30,14 @@ export const enemySprites = {
     leftIdle: load("assets/Villager LS idle.png"),
     leftWalk1: load("assets/Villager LSW1.png"),
     leftWalk2: load("assets/Villager LSW2.png"),
+
+
 };
 
 export const allEnemySprites = Object.values(enemySprites);
 
 export let enemies = [];
+export let deadEnemies = [];
 
 // ── SPAWN ─────────────────────────────
 export const ENEMY_TILE = 99;
@@ -63,82 +69,82 @@ export function initEnemies() {
 
 // ── LOCKED ROOM ───────────────────────
 export const lockedRooms = [
-  {
-    id: 1,
-    name: "Center big room",
-    x: 18, y: 12, w: 26, h: 16,
-    doors: [
-      { x: 16, y: 18 },
-      { x: 16, y: 19 },
-      { x: 16, y: 20 },
-      { x: 19, y: 27 },
-      { x: 20, y: 27 },
-      { x: 21, y: 27 },
-      { x: 27, y: 13 },
-      { x: 28, y: 13 },
-      { x: 29, y: 13 },
-      { x: 41, y: 19 },
-      { x: 41, y: 20 },
-      { x: 41, y: 21 },
+    {
+        id: 1,
+        name: "Center big room",
+        x: 18, y: 12, w: 26, h: 16,
+        doors: [
+            { x: 16, y: 18 },
+            { x: 16, y: 19 },
+            { x: 16, y: 20 },
+            { x: 19, y: 27 },
+            { x: 20, y: 27 },
+            { x: 21, y: 27 },
+            { x: 27, y: 13 },
+            { x: 28, y: 13 },
+            { x: 29, y: 13 },
+            { x: 41, y: 19 },
+            { x: 41, y: 20 },
+            { x: 41, y: 21 },
 
-    ],
-  },
+        ],
+    },
 
-  {
-    id: 2,
-    name: "Right center room",
-    x: 55, y: 14, w: 15, h: 14,
-    doors: [
-      { x: 59, y: 27 },
-      { x: 60, y: 27 },
-      { x: 61, y: 27 },
-      { x: 59, y: 13 },
-      { x: 60, y: 13 },
-      { x: 61, y: 13 },
-      { x: 53, y: 19 },
-      { x: 53, y: 20 },
-      { x: 53, y: 21 },
-    ],
-  },
+    {
+        id: 2,
+        name: "Right center room",
+        x: 55, y: 14, w: 15, h: 14,
+        doors: [
+            { x: 59, y: 27 },
+            { x: 60, y: 27 },
+            { x: 61, y: 27 },
+            { x: 59, y: 13 },
+            { x: 60, y: 13 },
+            { x: 61, y: 13 },
+            { x: 53, y: 19 },
+            { x: 53, y: 20 },
+            { x: 53, y: 21 },
+        ],
+    },
 
-  {
-    id: 3,
-    name: "Bottom left room",
-    x: 0, y: 40, w: 15, h: 12,
-    doors: [
-      { x: 17, y: 36 },
-      { x: 17, y: 37 },
-      { x: 17, y: 38 },
-      { x: 7, y: 47 },
-      { x: 9, y: 47 },
-    ],
-  },
+    {
+        id: 3,
+        name: "Bottom left room",
+        x: 0, y: 40, w: 15, h: 12,
+        doors: [
+            { x: 17, y: 36 },
+            { x: 17, y: 37 },
+            { x: 17, y: 38 },
+            { x: 7, y: 47 },
+            { x: 9, y: 47 },
+        ],
+    },
 
-  {
-    id: 4,
-    name: "Bottom middle room",
-    x: 43, y: 35, w: 26, h: 14,
-    doors: [
-      { x: 52, y: 38 },
-      { x: 52, y: 39 },
-      { x: 52, y: 40 },
-      { x: 68, y: 38 },
-      { x: 68, y: 39 },
-      { x: 68, y: 40 },
-      
-    ],
-  },
+    {
+        id: 4,
+        name: "Bottom middle room",
+        x: 43, y: 35, w: 26, h: 14,
+        doors: [
+            { x: 52, y: 38 },
+            { x: 52, y: 39 },
+            { x: 52, y: 40 },
+            { x: 68, y: 38 },
+            { x: 68, y: 39 },
+            { x: 68, y: 40 },
 
-  {
-    id: 5,
-    name: "Bottom right room",
-    x: 79, y: 31, w: 12, h: 17,
-    doors: [
-      { x: 75, y: 38 },
-      { x: 75, y: 39 },
-      { x: 75, y: 40 },
-    ],
-  }
+        ],
+    },
+
+    {
+        id: 5,
+        name: "Bottom right room",
+        x: 79, y: 31, w: 12, h: 17,
+        doors: [
+            { x: 75, y: 38 },
+            { x: 75, y: 39 },
+            { x: 75, y: 40 },
+        ],
+    }
 ];
 
 const LOCK_DOOR_TILE = 6;
@@ -167,23 +173,23 @@ export function enemiesInLockedRoomAlive() {
 }
 
 function closeRoomDoors(room) {
-  if (doorsClosed) return;
+    if (doorsClosed) return;
 
-  for (const door of room.doors) {
-    map[door.y * gridCols + door.x] = LOCK_DOOR_TILE;
-  }
+    for (const door of room.doors) {
+        map[door.y * gridCols + door.x] = LOCK_DOOR_TILE;
+    }
 
-  doorsClosed = true;
+    doorsClosed = true;
 }
 
 export function openRoomDoors(room = activeRoom) {
-  if (!room) return;
+    if (!room) return;
 
-  for (const door of room.doors) {
-    map[door.y * gridCols + door.x] = 1;
-  }
+    for (const door of room.doors) {
+        map[door.y * gridCols + door.x] = 1;
+    }
 
-  doorsClosed = false;
+    doorsClosed = false;
 }
 
 
@@ -193,21 +199,21 @@ export function resetRoomLock() {
 }
 
 export function updateRoomLock() {
-  if (!roomLocked) {
-    const room = getPlayerRoom();
+    if (!roomLocked) {
+        const room = getPlayerRoom();
 
-    if (room && enemiesInRoomAlive(room)) {
-      activeRoom = room;
-      roomLocked = true;
-      closeRoomDoors(activeRoom);
+        if (room && enemiesInRoomAlive(room)) {
+            activeRoom = room;
+            roomLocked = true;
+            closeRoomDoors(activeRoom);
+        }
     }
-  }
 
-  if (roomLocked && activeRoom && !enemiesInRoomAlive(activeRoom)) {
-    roomLocked = false;
-    openRoomDoors(activeRoom);
-    activeRoom = null;
-  }
+    if (roomLocked && activeRoom && !enemiesInRoomAlive(activeRoom)) {
+        roomLocked = false;
+        openRoomDoors(activeRoom);
+        activeRoom = null;
+    }
 }
 
 function updateEnemyAnimation(enemy) {
@@ -249,7 +255,7 @@ function updateEnemyAnimation(enemy) {
 export function updateEnemies() {
     if (!roomLocked || !activeRoom) return;
 
-    
+
 
     for (const enemy of enemies) {
         if (!entityInRoom(enemy, activeRoom)) continue;
@@ -305,12 +311,38 @@ export function updateEnemies() {
 // ── ÚTOK ─────────────────────────────
 export function attackEnemies() {
     if (player.attackCooldown > 0) return;
+
     for (const enemy of enemies) {
+
         const dx = enemy.x + enemy.width / 2 - (player.x + player.width / 2);
         const dy = enemy.y + enemy.height / 2 - (player.y + player.height / 2);
-        if (Math.sqrt(dx * dx + dy * dy) <= player.attackRange) enemy.hp -= player.attackDamage;
+
+        if (Math.sqrt(dx * dx + dy * dy) <= player.attackRange) {
+            enemy.hp -= player.attackDamage;
+        }
     }
-    enemies.splice(0, enemies.length, ...enemies.filter(e => e.hp > 0));
+
+    // SPAWN MRTVOL
+    for (const enemy of enemies) {
+
+        if (enemy.hp <= 0) {
+
+            deadEnemies.push({
+                x: enemy.x,
+                y: enemy.y,
+                width: enemy.width,
+                height: enemy.height
+            });
+        }
+    }
+
+    // REMOVE DEAD ENEMIES
+    enemies.splice(
+        0,
+        enemies.length,
+        ...enemies.filter(e => e.hp > 0)
+    );
+
     player.attackCooldown = 25;
 }
 
@@ -335,24 +367,42 @@ export function drawEnemies(ctx, camera, ZOOM) {
     }
 }
 
+export function drawDeadEnemies(ctx, camera, ZOOM) {
+
+    for (const corpse of deadEnemies) {
+
+        ctx.drawImage(
+            enemyDead,
+            Math.round((corpse.x - camera.x) * ZOOM),
+            Math.round((corpse.y - camera.y) * ZOOM),
+            corpse.width * ZOOM,
+            corpse.height * ZOOM
+        );
+    }
+}
+
+export function clearDeadEnemies() {
+    deadEnemies = [];
+}
+
 let activeRoom = null;
 
 function entityInRoom(entity, room) {
-  const col = Math.floor((entity.x + entity.width / 2) / TILE_SIZE);
-  const row = Math.floor((entity.y + entity.height / 2) / TILE_SIZE);
+    const col = Math.floor((entity.x + entity.width / 2) / TILE_SIZE);
+    const row = Math.floor((entity.y + entity.height / 2) / TILE_SIZE);
 
-  return (
-    col >= room.x &&
-    col <= room.x + room.w &&
-    row >= room.y &&
-    row <= room.y + room.h
-  );
+    return (
+        col >= room.x &&
+        col <= room.x + room.w &&
+        row >= room.y &&
+        row <= room.y + room.h
+    );
 }
 
 function getPlayerRoom() {
-  return lockedRooms.find(room => entityInRoom(player, room)) || null;
+    return lockedRooms.find(room => entityInRoom(player, room)) || null;
 }
 
 function enemiesInRoomAlive(room) {
-  return enemies.some(enemy => entityInRoom(enemy, room));
+    return enemies.some(enemy => entityInRoom(enemy, room));
 }
