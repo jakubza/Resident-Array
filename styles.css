@@ -1,4 +1,4 @@
-/* --- RETRO PIXEL FONT PRE SUBTITLE, TEXTY A TLAČIDLÁ --- */
+
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 body {
@@ -8,12 +8,36 @@ body {
     align-items: center;
     height: 95vh;
     display: flex;
+    
+}
+#crt-screen {
+    content: " ";
+    display: block;
+    position: fixed; /* Fixne prichytené cez celú obrazovku */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    
+    /* Tvoj originálny CRT gradient (riadky + chromatická aberácia) */
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 4px, 6px 100%;
+    
+    /* z-index: 9999 zaistí, že filter prekryje canvas, texty aj načítané obrazovky */
+    z-index: 9999; 
+    
+    /* Prepustí všetky kliknutia myšou a dotyky na elementy pod ním (hru, tlačidlá) */
+    pointer-events: none; 
 }
 
 html,
 body {
     touch-action: manipulation;
     overflow: hidden;
+    
 }
 
 canvas {
@@ -21,15 +45,17 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     background: black;
+    
 }
 
 #game {
     display: none;
     background: black;
     image-rendering: pixelated;
+    
 }
 
-/* --- PREROBENÉ RE / PIXELATED MAIN MENU --- */
+
 #menu {
     text-align: center;
     font-size: 50px;
@@ -42,11 +68,11 @@ canvas {
     height: 100%;
     justify-content: center;
     background: radial-gradient(circle at center, #140202 0%, #000000 85%);
-    animation: flicker 0.15s infinite; /* Rýchlejšie retro tikanie monitora */
+    animation: flicker 0.15s infinite; 
     overflow: hidden;
 }
 
-/* CRT Riadkovanie (Scanlines) pre autentický PS1 vzhľad */
+
 #menu::before {
     content: " ";
     display: block;
@@ -66,7 +92,7 @@ canvas {
     font-family: "Times New Roman", serif;
     font-weight: bold;
     z-index: 3;
-    /* Ostré vrstvené tiene namiesto moderného blur glow */
+    
     text-shadow: 
         4px 4px 0px #4a0000, 
         8px 8px 0px #1a0000;
@@ -83,7 +109,7 @@ canvas {
     text-transform: uppercase;
 }
 
-/* Zjednotené, vyčistené retro tlačidlá bez zbytočných duplicít */
+
 #start,
 #controls {
     background: #0a0a0a;
@@ -101,7 +127,7 @@ canvas {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    transition: none; /* Staré hry menili stavy okamžite, nie plynule */
+    transition: none; 
 }
 
 #start:hover,
@@ -122,7 +148,7 @@ canvas {
     z-index: 3;
 }
 
-/* --- OVERLAY (CONTROLS MENU) V ŠTÝLE RESIDENT EVIL --- */
+
 .overlay {
     display: none;
     position: fixed;
@@ -130,39 +156,45 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.92);
+    background: radial-gradient(circle at center, #140202 0%, #000000 85%);
     z-index: 10;
     justify-content: center;
     align-items: center;
+    animation: flicker 0.15s infinite; 
+    overflow: hidden;
 }
 
+
 .overlay-content {
-    background-color: #050505;
+    background-color: transparent;
     padding: 40px 60px;
-    border: 3px double #b30000; /* Klasický dvojitý RE rám */
+    border: 3px double #b30000;
     color: #cccccc;
     font-family: "Times New Roman", serif;
-    border-radius: 0px; /* Žiadne zaoblené hrany */
+    border-radius: 0px;
     font-size: 22px;
-    box-shadow: 0 0 20px rgba(90, 0, 0, 0.6);
+    box-shadow: 0 0 30px rgba(179, 0, 0, 0.3);
     max-width: 500px;
     width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 12; 
 }
 
 .overlay-content h2 {
-    margin-top: 0;
+    font-size: 76px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    letter-spacing: 8px;
     color: #b30000;
-    font-size: 40px;
-    letter-spacing: 6px;
-    text-shadow: 0 0 10px #5a0000;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
-    width: 100%;
-    text-align: center;
+    font-family: "Times New Roman", serif;
+    font-weight: bold;
+    z-index: 3;
+    text-shadow: 
+        4px 4px 0px #4a0000, 
+        8px 8px 0px #1a0000;
+    text-transform: uppercase;
 }
 
 .overlay-content ul {
@@ -171,12 +203,18 @@ canvas {
     line-height: 2.5;
     text-align: left;
     margin-bottom: 35px;
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    text-transform: uppercase;
 }
 
 .overlay-content li {
-    letter-spacing: 2px;
-    font-size: 18px;
-    color: #888;
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    letter-spacing: 3px;
+    color: #666;
+    z-index: 3;
+    text-transform: uppercase;
 }
 
 .overlay-content li strong {
@@ -187,17 +225,22 @@ canvas {
 }
 
 #closeControls {
-    background: transparent;
-    border: 2px solid #666;
-    color: #ddd;
-    padding: 12px 40px;
-    font-size: 16px;
+   background: #0a0a0a;
+    border: 4px solid #444;
+    color: #aaa;
+    padding: 10px 0;
+    font-size: 22px;
+    font-family: 'VT323', monospace;
+    letter-spacing: 4px;
     cursor: pointer;
-    letter-spacing: 3px;
+    width: 260px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 0 2px #000;
+    z-index: 3;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
     transition: none;
-    font-family: "Times New Roman", serif;
-    text-transform: uppercase;
-    width: 260px; 
 }
 
 #closeControls:hover {
@@ -208,7 +251,7 @@ canvas {
     background-color: transparent;
 }
 
-/* --- ŠTÝLY PRE OBRAZOVKY SMRTI A VÝHRY --- */
+
 #deathScreen {
     display: none;
     position: absolute;
@@ -262,7 +305,8 @@ canvas {
     z-index: 100;
     color: #f2cc0d;
     font-family: serif;
-    transition: opacity 2s
+    transition: opacity 2s;
+    
 }
 
 #winText {
@@ -282,7 +326,7 @@ canvas {
     display: none
 }
 
-/* --- RESPONSIVITA --- */
+
 @media (max-width: 1400px) {
     #menu {
         transform: scale(1.2);
@@ -295,7 +339,7 @@ canvas {
     }
 }
 
-/* Animácia rýchleho mihotania obrazovky */
+
 @keyframes flicker {
     0% { opacity: 0.97; }
     50% { opacity: 1; }
