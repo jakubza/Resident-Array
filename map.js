@@ -265,7 +265,7 @@ export function drawMap(ctx, ZOOM) {
             const tile = map[row * gridCols + col];
             if (tile === 0) continue;
 
-            // Pod exit dverami nakresli podlahu
+            
             if ([EXIT_DOOR_CLOSED_1, EXIT_DOOR_CLOSED_2,
                 EXIT_DOOR_OPEN_1, EXIT_DOOR_OPEN_2,
                 EXIT_DOOR_OPEN_3, EXIT_DOOR_OPEN_4].includes(tile)) {
