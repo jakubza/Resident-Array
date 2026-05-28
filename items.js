@@ -12,7 +12,7 @@ import {
 import { player } from "./player.js";
 import { camera } from "./map.js";
 
-export const COIN_GOAL = 1000;
+export const COIN_GOAL = 5000;
 export const HEAL_AMOUNT = 50;
 
 // ── COINS ─────────────────────────────
@@ -110,6 +110,47 @@ export function drawHeals(ctx, ZOOM) {
             Math.round((heal.x - camera.x) * ZOOM),
             Math.round((heal.y - camera.y) * ZOOM),
             TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+    }
+}
+
+// ── SKULLS ────────────────────────────
+export let skulls = [];
+
+export function initSkulls() {
+    skulls = [];
+
+    for (let row = 0; row < mapRows.length; row++) {
+        for (let col = 0; col < gridCols; col++) {
+
+            if (mapRows[row][col] === 96) {
+                skulls.push({
+                    x: col * TILE_SIZE,
+                    y: row * TILE_SIZE
+                });
+            }
+        }
+    }
+}
+
+export function drawSkulls(ctx, ZOOM) {
+
+    for (const skull of skulls) {
+
+        drawAtlasTile(
+            ctx,
+
+            // atlas coordinates
+            atlas.skull.x,
+            atlas.skull.y,
+            atlas.skull.w,
+            atlas.skull.h,
+
+            Math.round((skull.x - camera.x) * ZOOM),
+            Math.round((skull.y - camera.y) * ZOOM),
+
+            TILE_SIZE * ZOOM,
+            TILE_SIZE * ZOOM
+        );
     }
 }
 
