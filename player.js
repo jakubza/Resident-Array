@@ -35,9 +35,9 @@ export const player = {
     speed: 1,
     hp: 100, maxHp: 100,
     pulseOffset: 0,
-    attackDamage: 50,
-    attackRange: 35,
-    attackCooldown: 0,
+    attackDamage: 40,
+    attackRange: 50,
+    attackCooldown: 5,
 };
 
 // ── ANIMÁCIA ──────────────────────────
@@ -97,8 +97,8 @@ export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) 
     let speed = player.speed;
 
     if (collidesWithEnemy(player.x, player.y, player.width, player.height)) {
-        speed *= 0.7;
-        player.hp -= 0.3;
+        speed *= 0.5;
+        player.hp -= 0.1;
     }
 
     let nextX = player.x;
@@ -128,23 +128,37 @@ export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) 
     }
     pickSprite(moving);
 
-    // ── Útok ──
-    if ((keys[" "] || keys["Spacebar"]) && !attackPressed && player.attackCooldown <= 0) {
+    // ÚTOK
+    const attackKey = keys[" "] || keys["Spacebar"];
+
+    if (attackKey && !attackPressed && player.attackCooldown <= 0) {
         attackPressed = true;
+
         attackEnemiesFn();
         startSlash();
-    }
-    if (!(keys[" "] || keys["Spacebar"])) attackPressed = false;
-    if (player.attackCooldown > 0) player.attackCooldown--;
 
+        player.attackCooldown = 100;
+    }
+
+    if (!attackKey) {
+        attackPressed = false;
+    }
+
+    // Odpocitavanie cooldownu slash animacie
+    if (player.attackCooldown > 0) {
+        player.attackCooldown--;
+    }
+
+    // Miznuca slash animacia
     if (slashActive) {
-    slashTimer--;
+        slashTimer--;
 
-    if (slashTimer <= 0) {
-        slashActive = false;
+        if (slashTimer <= 0) {
+            slashActive = false;
+        }
     }
 }
-}
+
 
 // ── KRESLENIE ─────────────────────────
 export function drawPlayer(ctx, camera, ZOOM) {
