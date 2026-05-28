@@ -89,3 +89,18 @@ export function drawHerbPopup(ctx, herbPromptActive) {
     ctx.font = "18px serif";
     ctx.fillText("+" + HEAL_AMOUNT + " HP", x + boxW / 2, y + 135);
 }
+
+export function drawObjective(ctx, objectiveText) {
+
+    ctx.save();
+
+    ctx.font = "italic bold 22px serif";
+    ctx.fillStyle = "#f2cc0d";
+    ctx.textAlign = "center";
+
+
+    ctx.fillStyle = "#f2cc0d";
+    ctx.fillText(objectiveText, window.innerWidth / 2, 50);
+
+    ctx.restore();
+}
