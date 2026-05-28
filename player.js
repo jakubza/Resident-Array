@@ -35,7 +35,7 @@ export const player = {
     speed: 1,
     hp: 100, maxHp: 100,
     pulseOffset: 0,
-    attackDamage: 40,
+    attackDamage: 50,
     attackRange: 37,
     attackCooldown: 5,
 };
@@ -116,7 +116,7 @@ export function updatePlayer(keys, enemies, attackEnemiesFn, collidesWithEnemy) 
     if (isWalkable(nextX, player.y, player.width, player.height)) player.x = nextX;
     if (isWalkable(player.x, nextY, player.width, player.height)) player.y = nextY;
 
-    // ── Animácia ──
+   
     const moving = keys["w"] || keys["ArrowUp"] || keys["s"] || keys["ArrowDown"] ||
         keys["a"] || keys["ArrowLeft"] || keys["d"] || keys["ArrowRight"];
 

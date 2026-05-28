@@ -191,6 +191,7 @@ function gameLoop() {
     drawHeals(ctx, ZOOM);
     drawSkulls(ctx, ZOOM);
 
+    
     drawDecorations(ctx, ZOOM);
     drawEnemies(ctx, camera, ZOOM);
     drawDeadEnemies(ctx, camera, ZOOM);
