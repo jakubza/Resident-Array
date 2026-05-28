@@ -11,12 +11,12 @@ import {
 } from "./enemies.js";
 import {
     coins, ptas, resetPtas, initCoins, checkCoinCollision, drawCoins,
-    heals, initHeals, checkHealCollision, drawHeals,
+    heals, initHeals, checkHealCollision, drawHeals, drawSkulls, initSkulls,
     exitDoor, placeClosedExitDoor, openExitDoor, checkExitDoorCollision,
     herbPromptActive, currentHerb, herbIgnore,
-    setHerbState, HEAL_AMOUNT,
+    setHerbState, HEAL_AMOUNT, COIN_GOAL,
 } from "./items.js";
-import { drawUI, drawHerbPopup } from "./ui.js";
+import { drawUI, drawHerbPopup, drawObjective } from "./ui.js";
 import { allEnemySprites } from "./enemies.js";
 import { drawDeadEnemies } from "./enemies.js";
 
@@ -75,7 +75,7 @@ const keys = {};
 window.addEventListener("keydown", (e) => {
     keys[e.key] = true;
 
-    
+
     if (herbPromptActive) {
         if (e.key === "Enter" && currentHerb && !currentHerb.collected) {
             currentHerb.collected = true;
@@ -83,7 +83,7 @@ window.addEventListener("keydown", (e) => {
             setHerbState(false, null, null);
         }
         if (e.key === "Escape") {
-            setHerbState(false, null, currentHerb); 
+            setHerbState(false, null, currentHerb);
         }
     }
 });
@@ -149,6 +149,7 @@ function restartGame() {
 
     initCoins();
     initHeals();
+    initSkulls();
     clearDeadEnemies();
     initEnemies();
     placeClosedExitDoor();
@@ -188,17 +189,23 @@ function gameLoop() {
     drawMap(ctx, ZOOM);
     drawCoins(ctx, ZOOM);
     drawHeals(ctx, ZOOM);
+    drawSkulls(ctx, ZOOM);
 
-    
+    drawDecorations(ctx, ZOOM);
     drawEnemies(ctx, camera, ZOOM);
     drawDeadEnemies(ctx, camera, ZOOM);
     drawFog(ctx);
     drawLights(ctx, camera, ZOOM, player);
     drawDecorations(ctx, ZOOM);
+
     drawPlayer(ctx, camera, ZOOM);
-    drawPlayer(ctx, camera, ZOOM);
-drawSlash(ctx, camera, ZOOM);
+
+    drawSlash(ctx, camera, ZOOM);
     drawUI(ctx);
+
+    if (ptas < COIN_GOAL) {
+        drawObjective(ctx, "Objective: Collect all PTAS and exit the dungeon");
+    }
     drawHerbPopup(ctx, herbPromptActive);
 
     animationId = requestAnimationFrame(gameLoop);
@@ -212,7 +219,7 @@ function startGame() {
     if (fadeOverlay) {
         fadeOverlay.style.display = "block";
         fadeOverlay.style.opacity = "0";
-       
+
         requestAnimationFrame(() => {
             fadeOverlay.style.opacity = "1";
         });
@@ -241,6 +248,7 @@ function startGame() {
 
     initCoins();
     initHeals();
+    initSkulls();
     initEnemies();
     placeClosedExitDoor();
     spawnPlayer();
