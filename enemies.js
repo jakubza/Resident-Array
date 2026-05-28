@@ -315,11 +315,11 @@ export function updateEnemies() {
             if (!entityInRoom(a, activeRoom) || !entityInRoom(b, activeRoom)) continue;
             const dx = b.x - a.x; const dy = b.y - a.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const minDist = 8;
+            const minDist = 24;
             if (dist > 0 && dist < minDist) {
                 const overlap = minDist - dist;
-                const px = (dx / dist) * overlap * 0.5;
-                const py = (dy / dist) * overlap * 0.5;
+                const px = (dx / dist) * overlap * 0.25;
+                const py = (dy / dist) * overlap * 0.25;
                 a.x -= px; a.y -= py;
                 b.x += px; b.y += py;
             }
