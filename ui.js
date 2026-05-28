@@ -139,10 +139,11 @@ export function drawLeonQuote(ctx, player, camera, ZOOM) {
 
 const leonQuotes = [
     "Where'd everybody go? Bingo?",
-    "Hmph... too easy.",
+    "No thanks, bro.",
     "September 30th, 1998. The day I'll never forget.",
     "Finally some peace and quiet.",
     "Sorry, I don't do autographs.",
+    "I feel like a milion bucks.",
     "Sorry I'am not on the menu.",
 ];
 
