@@ -35,7 +35,7 @@ export const player = {
     speed: 1,
     hp: 100, maxHp: 100,
     pulseOffset: 0,
-    attackDamage: 25,
+    attackDamage: 40,
     attackRange: 37,
     attackCooldown: 5,
 };
