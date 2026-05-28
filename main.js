@@ -16,7 +16,7 @@ import {
     herbPromptActive, currentHerb, herbIgnore,
     setHerbState, HEAL_AMOUNT, COIN_GOAL,
 } from "./items.js";
-import { drawUI, drawHerbPopup, drawObjective } from "./ui.js";
+import { drawUI, drawHerbPopup, drawObjective, showLeonQuote, drawLeonQuote } from "./ui.js";
 import { allEnemySprites } from "./enemies.js";
 import { drawDeadEnemies } from "./enemies.js";
 
@@ -199,6 +199,7 @@ function gameLoop() {
     drawDecorations(ctx, ZOOM);
 
     drawPlayer(ctx, camera, ZOOM);
+    drawLeonQuote(ctx, player, camera, ZOOM);
 
     drawSlash(ctx, camera, ZOOM);
     drawUI(ctx);
