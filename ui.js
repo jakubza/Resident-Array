@@ -104,3 +104,50 @@ export function drawObjective(ctx, objectiveText) {
 
     ctx.restore();
 }
+
+let leonQuote = "";
+let leonQuoteTimer = 0;
+
+export function showLeonQuote(text, duration = 180) {
+    leonQuote = text;
+    leonQuoteTimer = duration;
+}
+
+export function drawLeonQuote(ctx, player, camera, ZOOM) {
+    if (leonQuoteTimer <= 0) return;
+
+    leonQuoteTimer--;
+
+    const x = Math.round((player.x - camera.x + player.width / 2) * ZOOM);
+    const y = Math.round((player.y - camera.y - 5) * ZOOM);
+
+    ctx.save();
+
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "center";
+
+    // shadow
+    ctx.fillStyle = "black";
+    ctx.fillText(leonQuote, x + 2, y + 2);
+
+    // text
+    ctx.fillStyle = "white";
+    ctx.fillText(leonQuote, x, y);
+
+    ctx.restore();
+}
+
+const leonQuotes = [
+    "Where'd everybody go? Bingo?",
+    "Hmph... too easy.",
+    "September 30th, 1998. The day I'll never forget.",
+    "Finally some peace and quiet.",
+    "Sorry, I don't do autographs.",
+    "Sorry I'am not on the menu.",
+];
+
+export function randomLeonQuote() {
+    const randomIndex = Math.floor(Math.random() * leonQuotes.length);
+
+    showLeonQuote(leonQuotes[randomIndex]);
+}

@@ -4,6 +4,7 @@
 
 import { mapRows, gridCols, TILE_SIZE, map, isWalkable } from "./map.js";
 import { player } from "./player.js";
+import { randomLeonQuote } from "./ui.js";
 
 const load = (src) => {
     const img = new Image();
@@ -69,8 +70,8 @@ export function initEnemies() {
 
 // ── LOCKED ROOM ───────────────────────
 export const lockedRooms = [
-    
-    
+
+
     {
         id: 1,
         name: "Center big room",
@@ -226,8 +227,10 @@ export function updateRoomLock() {
     }
 
     if (roomLocked && activeRoom && !enemiesInRoomAlive(activeRoom)) {
-        roomLocked = false;
         openRoomDoors(activeRoom);
+        randomLeonQuote();
+
+        roomLocked = false;
         activeRoom = null;
     }
 }
@@ -359,7 +362,7 @@ export function attackEnemies() {
         ...enemies.filter(e => e.hp > 0)
     );
 
-    
+
 }
 
 // ── KOLÍZIA S HRÁČOM ─────────────────
