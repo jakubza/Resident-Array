@@ -52,9 +52,9 @@ export function initEnemies() {
                     y: row * TILE_SIZE,
                     width: 24,
                     height: 24,
-                    speed: 0.4,
+                    speed: 0.2,
                     hp: 100,
-
+                    roomId: getEnemyRoomId(col, row),
                     direction: "front",
                     moving: false,
                     walkFrame: 0,
@@ -69,6 +69,8 @@ export function initEnemies() {
 
 // ── LOCKED ROOM ───────────────────────
 export const lockedRooms = [
+    
+    
     {
         id: 1,
         name: "Center big room",
@@ -123,11 +125,14 @@ export const lockedRooms = [
     {
         id: 4,
         name: "Bottom middle room",
-        x: 43, y: 35, w: 26, h: 14,
+        x: 41, y: 37, w: 30, h: 12,
         doors: [
             { x: 52, y: 38 },
             { x: 52, y: 39 },
             { x: 52, y: 40 },
+            { x: 59, y: 34 },
+            { x: 60, y: 34 },
+            { x: 61, y: 34 },
             { x: 68, y: 38 },
             { x: 68, y: 39 },
             { x: 68, y: 40 },
@@ -138,7 +143,7 @@ export const lockedRooms = [
     {
         id: 5,
         name: "Bottom right room",
-        x: 79, y: 31, w: 12, h: 17,
+        x: 77, y: 31, w: 12, h: 17,
         doors: [
             { x: 75, y: 38 },
             { x: 75, y: 39 },
@@ -146,6 +151,17 @@ export const lockedRooms = [
         ],
     }
 ];
+
+function getEnemyRoomId(col, row) {
+    const room = lockedRooms.find(room =>
+        col >= room.x &&
+        col <= room.x + room.w &&
+        row >= room.y &&
+        row <= room.y + room.h
+    );
+
+    return room ? room.id : null;
+}
 
 const LOCK_DOOR_TILE = 6;
 let roomLocked = false;
@@ -258,7 +274,7 @@ export function updateEnemies() {
 
 
     for (const enemy of enemies) {
-        if (!entityInRoom(enemy, activeRoom)) continue;
+        if (enemy.roomId !== activeRoom.id) continue;
         enemy.moving = false;
 
         const dx = player.x - enemy.x;
@@ -296,7 +312,7 @@ export function updateEnemies() {
             if (!entityInRoom(a, activeRoom) || !entityInRoom(b, activeRoom)) continue;
             const dx = b.x - a.x; const dy = b.y - a.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const minDist = 18;
+            const minDist = 8;
             if (dist > 0 && dist < minDist) {
                 const overlap = minDist - dist;
                 const px = (dx / dist) * overlap * 0.5;
@@ -343,7 +359,7 @@ export function attackEnemies() {
         ...enemies.filter(e => e.hp > 0)
     );
 
-    player.attackCooldown = 25;
+    
 }
 
 // ── KOLÍZIA S HRÁČOM ─────────────────
@@ -404,5 +420,5 @@ function getPlayerRoom() {
 }
 
 function enemiesInRoomAlive(room) {
-    return enemies.some(enemy => entityInRoom(enemy, room));
+    return enemies.some(enemy => enemy.roomId === room.id);
 }
