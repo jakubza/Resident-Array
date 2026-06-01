@@ -154,6 +154,7 @@ function restartGame() {
     initEnemies();
     placeClosedExitDoor();
     spawnPlayer();
+    
     updateCamera(player, ZOOM);
 
     gameRunning = true;
