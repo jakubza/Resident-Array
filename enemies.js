@@ -53,7 +53,7 @@ export function initEnemies() {
                     y: row * TILE_SIZE,
                     width: 24,
                     height: 24,
-                    speed: 0.2,
+                    speed: 0.4,
                     hp: 100,
                     roomId: getEnemyRoomId(col, row),
                     direction: "front",

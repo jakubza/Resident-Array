@@ -32,7 +32,7 @@ export const allSprites = Object.values(sprites);
 export const player = {
     x: 0, y: 0,
     width: 24, height: 24,
-    speed: 1,
+    speed: 2,
     hp: 200, maxHp: 200,
     pulseOffset: 0,
     attackDamage: 50,
